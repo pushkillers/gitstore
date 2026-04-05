@@ -137,6 +137,55 @@ export function ProjectCard({ project }: { project: Project }) {
                 <Badge variant="default" className="text-xs">+{project.tags.length - 2}</Badge>
               )}
             </div>
+            
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-2">
+              {project.demoUrl && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(project.demoUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-[#e6edf3] bg-[#1f6feb] hover:bg-[#388bfd] rounded-lg transition-colors cursor-pointer"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  DEMO
+                </button>
+              )}
+              
+              {(project.type === "paid" || project.type === "freemium") && project.buyUrl && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(project.buyUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-[#e6edf3] bg-[#238636] hover:bg-[#2ea043] rounded-lg transition-colors cursor-pointer"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  BUY
+                </button>
+              )}
+              
+              {(project.type === "free" || project.type === "freemium") && project.repository && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(project.repository, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium text-[#e6edf3] bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] rounded-lg transition-colors cursor-pointer"
+                >
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                  </svg>
+                  OPEN GITHUB
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
