@@ -1,69 +1,54 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# Dependencies
+# --- Gerenciadores de Pacotes (Node/Yarn/PnP) ---
 node_modules/
-/.pnp
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+# Logs de erro comuns
+*-debug.log*
+*-error.log*
+.pnpm-debug.log*
 
-# Frontend
+# --- Build e Artefatos (Geral) ---
+dist/
+build/
+out/
+.cache/
+*.tmp
+*.temp
+*.tsbuildinfo
+
+# --- Frontend (Next.js específico) ---
 frontend/.next/
 frontend/out/
 frontend/node_modules/
-frontend/.env*
-frontend/*.tsbuildinfo
+next-env.d.ts
 
-# Migration Tool
+# --- Migration Tool ---
 migration-tool/dist/
 migration-tool/node_modules/
-migration-tool/*.tsbuildinfo
 
-# Testing
+# --- Testes ---
 /coverage
 *.test.js.snap
 
-# Production
-/build
-/dist
-
-# OS
-.DS_Store
-Thumbs.db
+# --- Variáveis de Ambiente e Segredos ---
+.env
+.env*
+!.env.example
 *.pem
 
-# IDE
+# --- Sistema Operacional e IDEs ---
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-lerna-debug.log*
-
-# Environment variables
-.env
-.env*.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Vercel
+# --- Deploy (Vercel) ---
 .vercel
-
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-
-# Temporary files
-*.tmp
-*.temp
-.cache/
