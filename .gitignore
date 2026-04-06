@@ -1,0 +1,18 @@
+node_modules/
+.next/
+dist/
+bin/
+
+# Banco de dados local (contém senhas hash)
+db.json
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
+# Go build
+backend-go/bin/
+
+# Logs
+*.log
