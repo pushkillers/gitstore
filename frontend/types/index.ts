@@ -17,8 +17,6 @@ export interface Project {
   thumbnail?: string;
   screenshots?: string[];
   featured?: boolean;
-  demoUrl?: string;
-  buyUrl?: string;
 }
 
 export interface Team {

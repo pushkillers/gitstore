@@ -7,18 +7,12 @@ export const metadata: Metadata = {
   description: "Anuncie seus projetos e forme equipes de desenvolvimento",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
       <body className="antialiased bg-[#0d1117] text-[#e6edf3]">
         <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <main className="min-h-screen">{children}</main>
       </body>
     </html>
   );

@@ -1,138 +1,180 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { LANGUAGES } from "@/constants";
+import { LANGUAGES, CATEGORIES } from "@/constants";
+import { createProject, saveProject } from "@/lib/projects";
+import { CheckCircle, Loader2 } from "lucide-react";
+
+const TYPES = [
+  { value: "free",     label: "Gratuito",  desc: "Disponível para todos sem custo" },
+  { value: "freemium", label: "Freemium",  desc: "Versão gratuita + recursos pagos" },
+  { value: "paid",     label: "Pago",      desc: "Acesso mediante pagamento" },
+];
 
 export default function PublishPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const [form, setForm] = useState({
+    name: "", description: "", language: "", category: "",
+    tags: "", repository: "", type: "free" as "free" | "paid" | "freemium", price: "",
+  });
+
+  const set = (k: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    // TODO: Implement API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      alert("Projeto publicado com sucesso!");
-    }, 1000);
+    setSubmitting(true);
+    await new Promise((r) => setTimeout(r, 600));
+
+    const project = createProject({
+      name: form.name,
+      description: form.description,
+      language: form.language,
+      category: form.category,
+      tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
+      repository: form.repository,
+      type: form.type,
+      price: form.price ? parseFloat(form.price) : undefined,
+    });
+
+    saveProject(project);
+    setSubmitting(false);
+    setDone(true);
   };
 
-  return (
-    <div className="py-8">
-      <Container size="sm">
-        {/* Page Header */}
-        <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-3">
-              <span className="text-gradient">Publicar</span> Projeto
-            </h1>
-            <p className="text-lg text-[#7d8590]">
-              Compartilhe seu projeto com a comunidade
-            </p>
+  const inputCls = "w-full rounded-xl border border-[#30363d] bg-[#0d1117] px-4 py-2.5 text-sm text-[#e6edf3] outline-none placeholder:text-[#6e7681] focus:border-[#58a6ff] focus:ring-2 focus:ring-[#58a6ff]/15 transition-all";
+
+  if (done) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0d1117]">
+        <div className="w-full max-w-sm rounded-2xl border border-[#3fb950]/20 bg-[#161b22] p-8 text-center">
+          <CheckCircle className="mx-auto mb-4 h-14 w-14 text-[#3fb950]" />
+          <h2 className="text-2xl font-bold text-[#e6edf3]">Projeto publicado!</h2>
+          <p className="mt-2 text-sm text-[#7d8590]">Seu projeto já está visível no marketplace.</p>
+          <div className="mt-6 flex flex-col gap-3">
+            <button
+              onClick={() => router.push("/projects")}
+              className="w-full rounded-xl bg-[linear-gradient(135deg,#238636,#2ea043)] py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
+            >
+              Ver no marketplace
+            </button>
+            <button
+              onClick={() => { setDone(false); setForm({ name: "", description: "", language: "", category: "", tags: "", repository: "", type: "free", price: "" }); }}
+              className="w-full rounded-xl border border-[#30363d] py-2.5 text-sm font-medium text-[#e6edf3] transition-all hover:bg-[#21262d]"
+            >
+              Publicar outro projeto
+            </button>
           </div>
-          
-          <Card variant="elevated" className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <Input
-                label="Nome do Projeto"
-                type="text"
-                placeholder="meu-projeto-incrivel"
-                required
-                icon={
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                  </svg>
-                }
-              />
+        </div>
+      </div>
+    );
+  }
 
-              <div>
-                <label className="block text-sm font-medium mb-2 text-[#e6edf3]">
-                  Descrição
-                </label>
-                <textarea
-                  rows={4}
-                  className="w-full px-4 py-2.5 bg-[#0d1117] border border-[#30363d] rounded-lg text-[#e6edf3] placeholder:text-[#7d8590] focus:border-[#58a6ff] focus:outline-none focus:ring-2 focus:ring-[#58a6ff]/20 hover:border-[#484f58] transition-all resize-none"
-                  placeholder="Descreva seu projeto de forma clara e objetiva..."
-                  required
-                />
+  return (
+    <div className="min-h-screen bg-[#0d1117] py-10">
+      <Container size="sm">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-[#e6edf3]">
+            Publicar <span className="bg-gradient-to-r from-[#58a6ff] to-[#3fb950] bg-clip-text text-transparent">Projeto</span>
+          </h1>
+          <p className="mt-2 text-[#7d8590]">Compartilhe seu projeto com a comunidade</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="rounded-2xl border border-[#30363d] bg-[#161b22] p-6 space-y-5">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-[#7d8590]">Informações básicas</h2>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[#e6edf3]">Nome do projeto *</label>
+              <input type="text" value={form.name} onChange={set("name")} required placeholder="meu-projeto-incrivel" className={inputCls} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[#e6edf3]">Descrição *</label>
+              <textarea value={form.description} onChange={set("description")} required rows={3}
+                placeholder="Descreva seu projeto de forma clara e objetiva..."
+                className={`${inputCls} resize-none`} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-[#e6edf3]">Linguagem *</label>
+                <select value={form.language} onChange={set("language")} required className={inputCls}>
+                  <option value="">Selecione...</option>
+                  {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
               </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-[#e6edf3]">Categoria *</label>
+                <select value={form.category} onChange={set("category")} required className={inputCls}>
+                  <option value="">Selecione...</option>
+                  {CATEGORIES.filter((c) => c !== "Todos").map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2 text-[#e6edf3]">
-                  Linguagem Principal
-                </label>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[#e6edf3]">Tags <span className="text-[#7d8590]">(separadas por vírgula)</span></label>
+              <input type="text" value={form.tags} onChange={set("tags")} placeholder="nextjs, react, typescript" className={inputCls} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-[#e6edf3]">URL do repositório</label>
+              <input type="url" value={form.repository} onChange={set("repository")} placeholder="https://github.com/usuario/projeto" className={inputCls} />
+            </div>
+          </div>
+
+          {/* Tipo */}
+          <div className="rounded-2xl border border-[#30363d] bg-[#161b22] p-6 space-y-4">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-[#7d8590]">Tipo de acesso</h2>
+            <div className="grid grid-cols-3 gap-3">
+              {TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, type: t.value as typeof form.type }))}
+                  className={`rounded-xl border p-4 text-left transition-all ${
+                    form.type === t.value
+                      ? "border-[#58a6ff] bg-[#58a6ff]/10"
+                      : "border-[#30363d] hover:border-[#58a6ff]/40"
+                  }`}
+                >
+                  <p className="font-semibold text-[#e6edf3] text-sm">{t.label}</p>
+                  <p className="mt-1 text-xs text-[#7d8590]">{t.desc}</p>
+                </button>
+              ))}
+            </div>
+
+            {form.type !== "free" && (
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-[#e6edf3]">Preço (USD)</label>
                 <div className="relative">
-                  <select
-                    className="appearance-none w-full px-4 py-2.5 pr-10 bg-[#0d1117] border border-[#30363d] rounded-lg text-[#e6edf3] focus:border-[#58a6ff] focus:outline-none focus:ring-2 focus:ring-[#58a6ff]/20 hover:border-[#484f58] transition-all cursor-pointer"
-                    required
-                  >
-                    <option value="">Selecione uma linguagem</option>
-                    {LANGUAGES.map((lang) => (
-                      <option key={lang} value={lang}>
-                        {lang}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#7d8590]">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7d8590]">$</span>
+                  <input type="number" min="0.99" step="0.01" value={form.price} onChange={set("price")}
+                    placeholder="29.99" className={`${inputCls} pl-7`} />
                 </div>
               </div>
+            )}
+          </div>
 
-              <Input
-                label="Tags (separadas por vírgula)"
-                type="text"
-                placeholder="nextjs, react, typescript, api"
-                icon={
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                  </svg>
-                }
-              />
-
-              <Input
-                label="URL do Repositório"
-                type="url"
-                placeholder="https://github.com/usuario/projeto"
-                icon={
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-                  </svg>
-                }
-              />
-
-              <div className="pt-4">
-                <Button
-                  type="submit"
-                  variant="success"
-                  className="w-full"
-                  size="lg"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Publicando...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Publicar Projeto
-                    </>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Card>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#238636,#2ea043)] py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-60"
+          >
+            {submitting ? (
+              <><Loader2 className="h-4 w-4 animate-spin" />Publicando...</>
+            ) : (
+              <>🚀 Publicar projeto</>
+            )}
+          </button>
+        </form>
       </Container>
     </div>
   );

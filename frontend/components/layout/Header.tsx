@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { useSession } from "@/lib/useSession";
 import { ROUTES } from "@/constants";
-import { NotificationsDropdown } from "./NotificationsDropdown";
+import { cn } from "@/lib/utils";
 import { CreateMenuDropdown } from "./CreateMenuDropdown";
+import { NotificationsDropdown } from "./NotificationsDropdown";
 import { UserMenuDropdown } from "./UserMenuDropdown";
 
-// Icone GitHub SVG
 function GitHubIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -16,44 +18,137 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
+const navItems = [
+  { href: ROUTES.PROJECTS, label: "Projetos" },
+  { href: ROUTES.TEAMS, label: "Equipes" },
+  { href: ROUTES.DEVELOPERS, label: "Desenvolvedores" },
+  { href: "/cursos", label: "Cursos" },
+  { href: ROUTES.JOBS, label: "Trabalhos" },
+];
 
 export function Header() {
   const pathname = usePathname();
-  
-  const navItems = [
-    { href: ROUTES.PROJECTS, label: "Projetos" },
-    { href: ROUTES.TEAMS, label: "Equipes" },
-    { href: ROUTES.DEVELOPERS, label: "Desenvolvedores" },
-    { href: "/cursos", label: "Cursos" },
-    { href: ROUTES.JOBS, label: "Trabalhos" },
-  ];
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, hydrated } = useSession();
+  const isLoggedIn = hydrated && !!user;
+
+  const isActiveRoute = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0d1117] border-b border-[#30363d]">
-      <div className="px-8 lg:px-12">
-        <div className="flex items-center gap-6 h-20">
-          <Link href={ROUTES.HOME} className="flex items-center gap-2 text-xl font-bold text-white">
-            <GitHubIcon className="w-7 h-7" />
-            <span>GitStore</span>
+    <header className="sticky top-0 z-50 border-b border-[#30363d]/80 bg-[#0d1117]/92 backdrop-blur-xl">
+      <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-10">
+        <div className="flex h-20 items-center gap-4">
+          <Link
+            href={ROUTES.HOME}
+            className="flex items-center gap-3 rounded-xl px-2 py-2 text-xl font-bold text-white transition-colors hover:text-[#58a6ff]"
+          >
+            <GitHubIcon className="h-7 w-7" />
+            <div className="leading-none">
+              <span>GitStore</span>
+              <div className="mt-1 text-xs font-medium uppercase tracking-[0.24em] text-[#7d8590]">Marketplace dev</div>
+            </div>
           </Link>
-          
+
           <nav className="hidden lg:flex items-center gap-2">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} className="px-5 py-2.5 text-[#7d8590]">
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = isActiveRoute(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "rounded-xl px-4 py-2.5 text-sm font-medium transition-all",
+                    isActive
+                      ? "bg-[#161b22] text-[#e6edf3] shadow-[inset_0_0_0_1px_rgba(88,166,255,0.2)]"
+                      : "text-[#7d8590] hover:bg-[#161b22] hover:text-[#e6edf3]"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
-          
+
           <div className="flex-1" />
-          
-          <div className="flex items-center gap-4">
-            
-            <NotificationsDropdown />
-            <CreateMenuDropdown />
-            <UserMenuDropdown />
+
+          <div className="hidden items-center gap-3 lg:flex">
+            {isLoggedIn ? (
+              <>
+                <NotificationsDropdown />
+                <CreateMenuDropdown />
+                <UserMenuDropdown />
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#30363d] bg-[#161b22] px-4 py-2 text-sm font-medium text-[#e6edf3] transition-all hover:border-[#58a6ff]/40 hover:bg-[#21262d]"
+              >
+                Entrar
+              </Link>
+            )}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#30363d] bg-[#161b22] text-[#e6edf3] transition-colors hover:border-[#484f58] lg:hidden"
+            aria-label="Abrir menu"
+            aria-expanded={isMobileMenuOpen}
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
+              )}
+            </svg>
+          </button>
         </div>
+
+        {isMobileMenuOpen && (
+          <div className="border-t border-[#21262d] py-4 lg:hidden">
+            <nav className="grid gap-2">
+              {navItems.map((item) => {
+                const isActive = isActiveRoute(item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                      isActive
+                        ? "bg-[#161b22] text-[#e6edf3] shadow-[inset_0_0_0_1px_rgba(88,166,255,0.2)]"
+                        : "text-[#7d8590] hover:bg-[#161b22] hover:text-[#e6edf3]"
+                    )}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="mt-4 flex items-center justify-between gap-3">
+              {isLoggedIn ? (
+                <div className="flex items-center gap-3">
+                  <NotificationsDropdown />
+                  <UserMenuDropdown />
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#30363d] bg-[#161b22] px-4 py-2 text-sm font-medium text-[#e6edf3] transition-all hover:bg-[#21262d]"
+                >
+                  Entrar
+                </Link>
+              )}
+              {isLoggedIn && <CreateMenuDropdown />}
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

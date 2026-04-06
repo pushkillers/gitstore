@@ -1,0 +1,12 @@
+{
+  "name": "gitstore",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --names \"API,FRONT\" --prefix-colors \"cyan,green\" \"cd backend-go && go run main.go\" \"npm run dev --prefix frontend\"",
+    "build:api": "cd backend-go && go build -o bin/api main.go",
+    "install:front": "npm install --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

@@ -1,106 +1,200 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { ProjectGrid } from "@/components/features/projects/ProjectGrid";
 import { ProjectFilters } from "@/components/features/projects/ProjectFilters";
 import { mockProjects } from "@/lib/data";
+import { getPublishedProjects, PROJECTS_CHANGE_EVENT } from "@/lib/projects";
+import { Project } from "@/types";
+
+const SORT_OPTIONS = [
+  { value: "popular",  label: "Mais populares" },
+  { value: "rating",   label: "Melhor avaliados" },
+  { value: "recent",   label: "Mais recentes" },
+  { value: "downloads",label: "Mais baixados" },
+];
 
 export default function ProjectsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery]           = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedType, setSelectedType] = useState("all");
+  const [selectedType, setSelectedType]         = useState("all");
+  const [sortBy, setSortBy]                     = useState("popular");
 
-  const filteredProjects = mockProjects.filter((project) => {
-    const matchesSearch =
-      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLanguage =
-      !selectedLanguage || project.language === selectedLanguage;
-    const matchesCategory =
-      !selectedCategory || project.category === selectedCategory;
-    const matchesType =
-      selectedType === "all" || project.type === selectedType;
-    return matchesSearch && matchesLanguage && matchesCategory && matchesType;
+  // Inicializa já com os dados para evitar flash de "0 projetos"
+  const [allProjects, setAllProjects] = useState<Project[]>(() => {
+    if (typeof window === "undefined") return mockProjects;
+    try {
+      const userProjects = getPublishedProjects();
+      const ids = new Set(userProjects.map((p) => p.id));
+      return [...userProjects, ...mockProjects.filter((p) => !ids.has(p.id))];
+    } catch {
+      return mockProjects;
+    }
   });
 
-  // Separate featured projects
-  const featuredProjects = filteredProjects.filter((p) => p.featured);
-  const regularProjects = filteredProjects.filter((p) => !p.featured);
+  // Atualiza quando novos projetos são publicados
+  useEffect(() => {
+    const load = () => {
+      const userProjects = getPublishedProjects();
+      const ids = new Set(userProjects.map((p) => p.id));
+      setAllProjects([...userProjects, ...mockProjects.filter((p) => !ids.has(p.id))]);
+    };
+    // Sincroniza no mount (caso o estado inicial tenha sido o fallback SSR)
+    load();
+    window.addEventListener(PROJECTS_CHANGE_EVENT, load);
+    return () => window.removeEventListener(PROJECTS_CHANGE_EVENT, load);
+  }, []);
+
+  const filtered = allProjects
+    .filter((p) => {
+      const q = searchQuery.toLowerCase();
+      return (
+        (!q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)) &&
+        (!selectedLanguage || p.language === selectedLanguage) &&
+        (!selectedCategory || p.category === selectedCategory) &&
+        (selectedType === "all" || p.type === selectedType)
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === "rating")    return b.rating - a.rating;
+      if (sortBy === "downloads") return b.downloads - a.downloads;
+      if (sortBy === "recent")    return b.id - a.id;
+      return b.downloads * b.rating - a.downloads * a.rating; // popular
+    });
+
+  const featured = filtered.filter((p) => p.featured);
+  const regular  = filtered.filter((p) => !p.featured);
+
+  const totalDownloads = allProjects.reduce((s, p) => s + p.downloads, 0);
+  const avgRating = allProjects.length
+    ? (allProjects.filter(p => p.rating > 0).reduce((s, p) => s + p.rating, 0) /
+       allProjects.filter(p => p.rating > 0).length).toFixed(1)
+    : "0.0";
 
   return (
-    <div className="py-8">
-      <Container>
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-3">
-            <span className="text-gradient">Explorar</span> Projetos
-          </h1>
-          <p className="text-lg text-[#7d8590]">
-            Descubra projetos open source, templates premium e soluções prontas
-          </p>
-        </div>
-        
-        {/* Filters */}
-        <ProjectFilters
-          searchQuery={searchQuery}
-          selectedLanguage={selectedLanguage}
-          selectedCategory={selectedCategory}
-          selectedType={selectedType}
-          onSearchChange={setSearchQuery}
-          onLanguageChange={setSelectedLanguage}
-          onCategoryChange={setSelectedCategory}
-          onTypeChange={setSelectedType}
-        />
-        
-        {/* Results count */}
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-sm text-[#7d8590]">
-            {filteredProjects.length} {filteredProjects.length === 1 ? 'projeto encontrado' : 'projetos encontrados'}
-          </p>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[#7d8590]">Ordenar por:</span>
-            <select className="px-3 py-1.5 bg-[#0d1117] border border-[#30363d] rounded-lg text-sm text-[#e6edf3] focus:border-[#58a6ff] outline-none cursor-pointer">
-              <option>Mais populares</option>
-              <option>Melhor avaliados</option>
-              <option>Mais recentes</option>
-              <option>Mais baixados</option>
-            </select>
-          </div>
-        </div>
-        
-        {/* Featured Projects */}
-        {featuredProjects.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center gap-2 mb-6">
-              <svg className="w-6 h-6 text-[#d29922]" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
-              </svg>
-              <h2 className="text-2xl font-bold">Projetos em Destaque</h2>
+    <div className="min-h-screen bg-[#0d1117]">
+      {/* Hero */}
+      <div className="relative overflow-hidden border-b border-[#30363d] bg-[#0d1117] py-14">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(88,166,255,0.12),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(48,54,61,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(48,54,61,0.3)_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+        <Container>
+          <div className="relative text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#58a6ff]/20 bg-[#58a6ff]/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#8ec2ff]">
+              🚀 Marketplace de Projetos
             </div>
-            <ProjectGrid projects={featuredProjects} />
+            <h1 className="mb-4 text-5xl font-bold tracking-tight text-[#e6edf3] md:text-6xl">
+              Explore{" "}
+              <span className="bg-gradient-to-r from-[#58a6ff] to-[#bc8cff] bg-clip-text text-transparent">
+                projetos incríveis
+              </span>
+            </h1>
+            <p className="mx-auto mb-10 max-w-2xl text-lg text-[#7d8590]">
+              Descubra templates, ferramentas e soluções prontas criadas pela comunidade
+            </p>
+
+            {/* Stats */}
+            <div className="mx-auto grid max-w-lg grid-cols-3 gap-4">
+              {[
+                { label: "Projetos", value: allProjects.length.toString() },
+                { label: "Downloads", value: `${(totalDownloads / 1000).toFixed(0)}k+` },
+                { label: "Avaliação média", value: `⭐ ${avgRating}` },
+              ].map((s) => (
+                <div key={s.label} className="rounded-2xl border border-[#30363d] bg-[#161b22]/80 px-4 py-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold text-[#e6edf3]">{s.value}</p>
+                  <p className="mt-1 text-xs text-[#7d8590]">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-        
-        {/* Regular Projects */}
-        {regularProjects.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold mb-6">Todos os Projetos</h2>
-            <ProjectGrid projects={regularProjects} />
+        </Container>
+      </div>
+
+      <Container>
+        <div className="py-8">
+          {/* Filters */}
+          <div className="mb-6 rounded-2xl border border-[#30363d] bg-[#161b22] p-4">
+            <ProjectFilters
+              searchQuery={searchQuery}
+              selectedLanguage={selectedLanguage}
+              selectedCategory={selectedCategory}
+              selectedType={selectedType}
+              onSearchChange={setSearchQuery}
+              onLanguageChange={setSelectedLanguage}
+              onCategoryChange={setSelectedCategory}
+              onTypeChange={setSelectedType}
+            />
           </div>
-        )}
-        
-        {/* Empty state */}
-        {filteredProjects.length === 0 && (
-          <div className="text-center py-16">
-            <svg className="w-16 h-16 mx-auto mb-4 text-[#7d8590]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-xl font-semibold mb-2">Nenhum projeto encontrado</h3>
-            <p className="text-[#7d8590]">Tente ajustar os filtros ou buscar por outros termos</p>
+
+          {/* Results bar */}
+          <div className="mb-8 flex items-center justify-between">
+            <p className="text-sm text-[#7d8590]">
+              <span className="font-semibold text-[#e6edf3]">{filtered.length}</span>{" "}
+              {filtered.length === 1 ? "projeto encontrado" : "projetos encontrados"}
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[#7d8590]">Ordenar por</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="rounded-xl border border-[#30363d] bg-[#161b22] px-3 py-1.5 text-sm text-[#e6edf3] outline-none focus:border-[#58a6ff] transition-colors cursor-pointer"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        )}
+
+          {/* Featured */}
+          {featured.length > 0 && (
+            <div className="mb-12">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d29922]/20 bg-[#d29922]/10 text-[#d29922]">⭐</div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[#d29922]">Em destaque</p>
+                  <h2 className="text-xl font-bold text-[#e6edf3]">Projetos em Destaque</h2>
+                </div>
+              </div>
+              <ProjectGrid projects={featured} />
+            </div>
+          )}
+
+          {/* All */}
+          {regular.length > 0 && (
+            <div>
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#58a6ff]/20 bg-[#58a6ff]/10 text-[#58a6ff]">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[#58a6ff]">Todos os projetos</p>
+                  <h2 className="text-xl font-bold text-[#e6edf3]">Explorar catálogo</h2>
+                </div>
+              </div>
+              <ProjectGrid projects={regular} />
+            </div>
+          )}
+
+          {/* Empty */}
+          {filtered.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-[#30363d] py-20 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#30363d] bg-[#161b22] text-4xl">🔍</div>
+              <h3 className="text-xl font-semibold text-[#e6edf3]">Nenhum projeto encontrado</h3>
+              <p className="mt-2 text-[#7d8590]">Tente ajustar os filtros ou buscar por outros termos</p>
+              <button
+                onClick={() => { setSearchQuery(""); setSelectedLanguage(""); setSelectedCategory(""); setSelectedType("all"); }}
+                className="mt-6 rounded-xl border border-[#30363d] px-5 py-2.5 text-sm font-medium text-[#e6edf3] transition-all hover:bg-[#21262d]"
+              >
+                Limpar filtros
+              </button>
+            </div>
+          )}
+        </div>
       </Container>
     </div>
   );
