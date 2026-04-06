@@ -1,0 +1,54 @@
+# --- Gerenciadores de Pacotes (Node/Yarn/PnP) ---
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+# Logs de erro comuns
+*-debug.log*
+*-error.log*
+.pnpm-debug.log*
+
+# --- Build e Artefatos (Geral) ---
+dist/
+build/
+out/
+.cache/
+*.tmp
+*.temp
+*.tsbuildinfo
+
+# --- Frontend (Next.js específico) ---
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+next-env.d.ts
+
+# --- Migration Tool ---
+migration-tool/dist/
+migration-tool/node_modules/
+
+# --- Testes ---
+/coverage
+*.test.js.snap
+
+# --- Variáveis de Ambiente e Segredos ---
+.env
+.env*
+!.env.example
+*.pem
+
+# --- Sistema Operacional e IDEs ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Deploy (Vercel) ---
+.vercel

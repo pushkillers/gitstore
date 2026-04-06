@@ -1,0 +1,422 @@
+# GITSTORE - GUIA DE ARQUITETURA E ORGANIZAÇÃO
+# Última revisão: Abril 2026
+# Versão: 2.0
+
+================================================================================
+# SEÇÃO 1: ESTRUTURA DO PROJETO
+================================================================================
+
+## Árvore de Diretórios
+
+gitstore/
++-- frontend/                    # Next.js 15 + React 19 + TypeScript
+¦   +-- app/                     # App Router (Next.js 13+)
+¦   +-- components/              # Componentes React
+¦   ¦   +-- ui/                 # Componentes base (Button, Input, Card, Badge)
+¦   ¦   +-- layout/             # Header, Container, Dropdowns
+¦   ¦   +-- features/           # ProjectCard, TeamCard, Filters
+¦   +-- lib/                     # Utilitários e configs
+¦   +-- types/                  # Tipagens TypeScript
+¦   +-- constants/              # Constantes do projeto
+¦   +-- public/                 # Assets estáticos
++-- backend/                     # API (futuro)
++-- ia.txt                       # Este arquivo
+
+## Hierarquia de Componentes
+
+1. UI Components: components/ui/ (Button, Input, Card, Badge)
+2. Layout Components: components/layout/ (Header, Container)
+3. Feature Components: components/features/[feature]/
+4. Pages: app/[route]/page.tsx
+
+================================================================================
+# SEÇÃO 2: SISTEMA DE CORES
+================================================================================
+
+## Variáveis CSS (globals.css)
+
+bg-github-canvas-default      #0d1117 - Fundo principal
+bg-github-canvas-subtle       #161b22 - Fundo secundário
+border-github-border-default  #30363d - Bordas
+text-github-fg-default        #e6edf3 - Texto principal
+text-github-accent-fg         #58a6ff - Azul destaque
+bg-github-success-emphasis    #238636 - Verde/Sucesso
+bg-github-danger-fg           #f85149 - Vermelho/Erro
+
+?? REALIDADE: Muitos componentes usam hex direto bg-[#238636] por granularidade
+?? DECISÃO: Use @theme quando possível, hex quando necessário
+
+================================================================================
+# SEÇÃO 3: ORGANIZAÇÃO DE CÓDIGO
+================================================================================
+
+## Ordem de Imports
+1. React/Next
+2. Bibliotecas externas
+3. Componentes internos (@/components)
+4. Utilitários/Constantes
+5. Tipos
+
+## Estrutura de Arquivo
+```typescript
+"use client"; // Se necessário
+
+// ============================================================
+// IMPORTS
+// ============================================================
+
+// ============================================================
+// TYPES
+// ============================================================
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+
+// ============================================================
+// COMPONENT
+// ============================================================
+```
+
+================================================================================
+# SEÇÃO 4: NOMENCLATURA
+================================================================================
+
+## Variáveis
+- camelCase: userProfile, isLoading, hasPermission
+
+## Funções
+- camelCase: handleUserSubmit, fetchProjectData
+
+## Componentes React
+- PascalCase: UserCard, ProjectList
+
+## Interfaces
+- PascalCase + Props: ButtonProps, ProjectData
+
+================================================================================
+# SEÇÃO 5: ESPAÇAMENTOS
+================================================================================
+
+1 LINHA em branco entre:
+- Imports e código
+- Declaração de variáveis e lógica
+- Funções diferentes
+- Seções lógicas
+
+2 LINHAS em branco entre:
+- Componentes principais
+- Declaração de interfaces
+
+================================================================================
+# SEÇÃO 6: BOAS PRÁTICAS
+================================================================================
+
+## Single Responsibility
+? Bom:
+function fetchUser() { }
+function validateUser() { }
+
+? Ruim:
+function processUser() { fetch(); validate(); save(); }
+
+## Early Returns
+? Bom:
+if (!user) return false;
+if (!user.isActive) return false;
+return true;
+
+? Ruim:
+if (user) { if (user.isActive) { return true; } }
+
+## Tamanho de Funções
+- Máximo 20-30 linhas
+
+================================================================================
+# SEÇÃO 7: COMENTÁRIOS
+================================================================================
+
+? Use para:
+- Dividir seções: // === SECTION ===
+- Explicar POR QUE (não O QUE)
+- TODO/FIXME com contexto
+
+? Não use para:
+- Código auto-explicativo
+- O óbvio
+
+================================================================================
+# SEÇÃO 8: TAILWIND CSS
+================================================================================
+
+## Ordem de Classes
+1. Layout (flex, grid, position)
+2. Spacing (p, m, gap)
+3. Size (w, h)
+4. Visual (bg, border)
+5. Typography (text, font)
+6. Estado (hover, focus)
+7. Responsivo (md:, lg:)
+
+## Uso de Cores
+Preferência: bg-github-canvas-default
+Exceção: bg-[#238636] quando necessário
+
+## Utilitário cn()
+```typescript
+className={cn(
+  "base-classes",
+  condition && "conditional",
+  className
+)}
+```
+
+================================================================================
+# SEÇÃO 9: ESTADO
+================================================================================
+
+## Agrupe estados relacionados
+? Bom:
+const [formData, setFormData] = useState({
+  name: "", email: "", bio: ""
+});
+
+? Ruim:
+const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+
+================================================================================
+# SEÇÃO 10: PERFORMANCE
+================================================================================
+
+1. useMemo - cálculos caros
+2. useCallback - handlers passados a filhos
+3. Lazy loading - componentes pesados
+4. next/image - sempre para imagens
+
+================================================================================
+# SEÇÃO 11: CHECKLIST
+================================================================================
+
+## Antes de Commitar
+- [ ] npm run lint passa
+- [ ] Sem console.log
+- [ ] Nomenclatura correta
+- [ ] Espaçamentos adequados
+- [ ] Client Components marcados
+
+## Ao Criar Feature
+- [ ] Pasta em components/features/
+- [ ] Página em app/[route]/
+- [ ] Rota em constants/ se necessário
+
+================================================================================
+# SEÇÃO 12: PROBLEMAS ENCONTRADOS NA REVISÃO
+================================================================================
+
+1. ? Funcionando: Next.js 15, TypeScript, Tailwind, App Router
+2. ?? Inconsistência: Cores hex vs @theme (não crítico)
+3. ?? Settings page: Muito grande, considerar separar
+4. ? Estrutura: Bem organizada seguindo padrões
+5. ? Componentes: Bem estruturados e reutilizáveis
+
+## Recomendações
+1. Padronizar cores gradualmente
+2. Separar settings em arquivos menores
+3. Adicionar testes (Vitest/Playwright)
+
+================================================================================
+# SEÇÃO 13: PADRÕES ESPECÍFICOS DO PROJETO
+================================================================================
+
+## Path Alias (@/)
+Sempre use path alias para imports internos:
+✅ import { Button } from "@/components/ui/Button";
+❌ import { Button } from "../../components/ui/Button";
+
+## forwardRef em Componentes UI
+Todos componentes UI usam forwardRef para ref forwarding:
+```typescript
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ ...props }, ref) => (
+    <button ref={ref} {...props} />
+  )
+);
+Button.displayName = "Button";
+```
+
+## Mock Data
+Local: lib/data.ts
+Use para dados de exemplo durante desenvolvimento.
+Mantenha separado da lógica real de API.
+
+## Constantes de Rotas
+Local: constants/index.ts
+```typescript
+export const ROUTES = {
+  HOME: "/",
+  PROJECTS: "/projects",
+  TEAMS: "/teams",
+} as const;
+```
+
+## Utilitário cn()
+Local: lib/utils.ts
+Combina classes com tailwind-merge e clsx:
+```typescript
+import { cn } from "@/lib/utils";
+
+cn("base", condition && "conditional", className);
+```
+
+================================================================================
+# SEÇÃO 14: RESPONSIVIDADE
+================================================================================
+
+## Mobile-First
+Sempre projete para mobile primeiro, depois expanda:
+```typescript
+// Mobile (default) -> Tablet -> Desktop
+<div className="flex-col md:flex-row lg:gap-6">
+```
+
+## Breakpoints do Tailwind
+- sm: 640px
+- md: 768px
+- lg: 1024px
+- xl: 1280px
+- 2xl: 1536px
+
+## Container
+Use Container do layout para largura máxima:
+```typescript
+import { Container } from "@/components/layout/Container";
+
+<Container className="py-8">
+  {/* Conteúdo */}
+</Container>
+```
+
+================================================================================
+# SEÇÃO 15: ACESSIBILIDADE
+================================================================================
+
+## Regras Básicas
+1. Alt text em todas imagens
+2. aria-label em botões sem texto
+3. focus-visible para navegação por teclado
+4. Contraste de cores adequado
+
+## Exemplos
+```typescript
+<button aria-label="Fechar modal">
+  <XIcon />
+</button>
+
+<Image
+  src="/foto.jpg"
+  alt="Foto do perfil do usuário"
+  width={100}
+  height={100}
+/>
+```
+
+## Testes de Acessibilidade
+- Navegue usando apenas TAB
+- Use leitor de tela (NVDA/VoiceOver)
+- Verifique contraste em: https://webaim.org/resources/contrastchecker/
+
+================================================================================
+# SEÇÃO 16: ERROR HANDLING
+================================================================================
+
+## Padrão do Projeto
+Use early returns e mensagens claras:
+```typescript
+try {
+  const data = await fetchUser(id);
+  if (!data) return null;
+  return data;
+} catch (error) {
+  console.error("[fetchUser] Falha ao buscar usuário:", error);
+  return null;
+}
+```
+
+## Error Boundaries (Futuro)
+Implementar quando adicionar monitoramento:
+```typescript
+// components/layout/ErrorBoundary.tsx
+```
+
+================================================================================
+# SEÇÃO 17: GERENCIAMENTO DE ESTADO COMPLEXO
+================================================================================
+
+## Quando o estado cresce:
+
+De: useState simples
+Para: useReducer ou Zustand
+
+## Exemplo useReducer:
+```typescript
+type Action =
+  | { type: "SET_FIELD"; field: string; value: string }
+  | { type: "RESET" };
+
+function formReducer(state: State, action: Action) {
+  switch (action.type) {
+    case "SET_FIELD":
+      return { ...state, [action.field]: action.value };
+    case "RESET":
+      return initialState;
+  }
+}
+```
+
+================================================================================
+# SEÇÃO 18: DOCUMENTAÇÃO DE COMPONENTES
+================================================================================
+
+## Componentes Complexos
+Documente props no topo do arquivo:
+```typescript
+/**
+ * Dropdown reutilizável com suporte a header, items e dividers
+ * @example
+ * <Dropdown trigger={<button>Abrir</button>}>
+ *   <DropdownItem>Opção 1</DropdownItem>
+ * </Dropdown>
+ */
+export function Dropdown({ trigger, children }) {
+  // ...
+}
+```
+
+## README por Feature
+Para features complexas, adicione README.md na pasta:
+```
+components/features/projects/README.md
+```
+
+================================================================================
+# SEÇÃO 19: REVISÃO DE CÓDIGO
+================================================================================
+
+## Checklist para PRs
+- [ ] Código segue padrões do ia.txt
+- [ ] Não há código duplicado
+- [ ] Componentes são reutilizáveis quando possível
+- [ ] Estados estão bem gerenciados
+- [ ] Sem memory leaks (useEffect cleanup)
+- [ ] Performance aceitável (Lighthouse > 90)
+
+## Perguntas para fazer
+- Isso pode ser mais simples?
+- Isso já existe em outro lugar?
+- Está fácil de testar?
+- Está acessível?
+
+================================================================================
+FIM
+================================================================================
