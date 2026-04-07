@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TOAST_EVENT_NAME, type Toast } from "@/lib/toast";
+import { TOAST_EVENT_NAME, type Toast } from "@/lib/utils/toast";
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from "lucide-react";
 
 const ICONS = {

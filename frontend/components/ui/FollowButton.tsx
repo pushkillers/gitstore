@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { isFollowing, toggleFollow, FOLLOWS_EVENT } from "@/lib/follows";
-import { useProfile } from "@/lib/useProfile";
+import { isFollowing, toggleFollow, FOLLOWS_EVENT } from "@/lib/api/follows";
+import { useProfile } from "@/hooks/useProfile";
 
 interface Props {
   username: string;

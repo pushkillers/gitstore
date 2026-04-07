@@ -11,8 +11,8 @@ import {
   isAdminLoggedIn, getAdminName, adminLogout,
   fetchAdminStats, fetchAdminUsers, deleteAdminUser,
   fetchAdminProjects, deleteAdminProject,
-} from "@/lib/admin";
-import { toast } from "@/lib/toast";
+} from "@/lib/api/admin";
+import { toast } from "@/lib/utils/toast";
 
 type Tab = "overview" | "users" | "projects";
 

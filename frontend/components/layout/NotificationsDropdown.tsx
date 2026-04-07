@@ -56,12 +56,12 @@ export function NotificationsDropdown() {
           >
             <div className="flex items-start gap-3 w-full">
               {notif.unread && (
-                <span className="w-2 h-2 mt-1.5 bg-[#1f6feb] rounded-full flex-shrink-0" />
+                <span className="w-2 h-2 mt-2 bg-[#1f6feb] rounded-full flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[#e6edf3] truncate">{notif.title}</p>
-                <p className="text-xs text-[#7d8590] mt-0.5">{notif.description}</p>
-                <p className="text-xs text-[#7d8590] mt-1">{notif.time}</p>
+                <p className="text-sm text-[#7d8590] mt-1">{notif.description}</p>
+                <p className="text-sm text-[#7d8590] mt-1.5">{notif.time}</p>
               </div>
             </div>
           </DropdownItem>
@@ -73,7 +73,7 @@ export function NotificationsDropdown() {
       <DropdownItem
         onClick={() => console.log("Ver todas")}
         icon={
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>

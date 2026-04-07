@@ -10,7 +10,7 @@ export interface Project {
   createdAt?: string;
   updatedAt?: string;
   price?: number;
-  type: "free" | "paid" | "freemium";
+  type: "free" | "paid";
   category: string;
   rating: number;
   downloads: number;
@@ -26,6 +26,7 @@ export interface Team {
   members: number;
   projects: number;
   avatar?: string;
+  banner?: string;
 }
 
 export interface Developer {
@@ -61,4 +62,5 @@ export interface Job {
     rating: number;
     jobsPosted: number;
   };
+  thumbnail?: string;
 }

@@ -3,14 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  ArrowLeft, Download, ExternalLink, GitFork, Heart, Share2, Star, Tag
+  ArrowLeft, Download, ExternalLink, GitFork, Heart, Share2, Star, Tag, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { mockProjects } from "@/lib/data";
-import { getPublishedProjects } from "@/lib/projects";
-import { getLikedProjects, toggleLike } from "@/lib/xp";
-import { toast } from "@/lib/toast";
-import { formatNumber } from "@/lib/utils";
+import { getPublishedProjects } from "@/lib/api/projects";
+import { getLikedProjects, toggleLike } from "@/lib/utils/xp";
+import { toast } from "@/lib/utils/toast";
+import { formatNumber } from "@/lib/utils/cn";
 import { Project } from "@/types";
 
 const LANG_COLORS: Record<string, string> = {
@@ -25,8 +26,25 @@ export default function ProjectDetailPage() {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Mock images and contributors (replace with real data from API)
+  const projectImages = [
+    "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop"
+  ];
+
+  const contributors = [
+    { id: 2, name: "João Silva", username: "joaosilva", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=joao" },
+    { id: 3, name: "Maria Santos", username: "mariasantos", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maria" },
+    { id: 1, name: "Admin User", username: "admin", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin" }
+  ];
 
   useEffect(() => {
+    // Scroll to top on mount
+    window.scrollTo(0, 0);
+    
     const numId = Number(id);
     const all = [...getPublishedProjects(), ...mockProjects];
     const found = all.find((p) => p.id === numId) ?? null;
@@ -79,36 +97,134 @@ export default function ProjectDetailPage() {
     toast.info("Redirecionando para o repositório...");
   };
 
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % projectImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + projectImages.length) % projectImages.length);
+  };
+
   return (
     <div className="min-h-screen bg-[#0d1117] py-8">
-      <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         {/* Back */}
         <button
           onClick={() => router.back()}
-          className="mb-6 inline-flex items-center gap-1.5 text-sm text-[#7d8590] transition-colors hover:text-[#e6edf3]"
+          className="mb-6 inline-flex items-center gap-2 rounded-lg bg-[#238636] px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-[#2ea043]"
         >
           <ArrowLeft className="h-4 w-4" />
           Voltar
         </button>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
-          {/* Main */}
-          <div className="space-y-5">
-            {/* Header card */}
-            <div className="overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22]">
-              {/* Banner */}
-              <div
-                className="relative h-48 overflow-hidden"
-                style={{ background: `linear-gradient(135deg, ${langColor}18, ${langColor}08)` }}
-              >
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(48,54,61,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(48,54,61,0.2)_1px,transparent_1px)] bg-[size:28px_28px]" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/8 bg-[#0d1117]/80 backdrop-blur-sm">
-                    <svg className="h-10 w-10" fill="currentColor" viewBox="0 0 16 16" style={{ color: langColor }}>
-                      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-                    </svg>
-                  </div>
+        <div className="grid gap-6 lg:grid-cols-[280px_1fr_300px]">
+          {/* Left Sidebar - Author Card */}
+          <aside className="space-y-4">
+            <div className="rounded-xl border border-[#21262d] bg-[#161b22] p-5">
+              <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#484f58]">Autor</h3>
+              
+              <div className="flex flex-col items-center text-center">
+                <div className="relative h-20 w-20 mb-3">
+                  <Image
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${project.author}`}
+                    alt={project.author}
+                    fill
+                    className="rounded-full object-cover"
+                  />
                 </div>
+                
+                <h4 className="text-base font-semibold text-[#e6edf3] mb-1">@{project.author}</h4>
+                <p className="text-xs text-[#7d8590] mb-4">Desenvolvedor</p>
+                
+                <Link
+                  href={`/perfil?user=${project.author}`}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-[#30363d] bg-[#21262d] px-4 py-2 text-sm font-medium text-[#c9d1d9] transition-colors hover:border-[#484f58] hover:text-[#e6edf3]"
+                >
+                  Ver perfil
+                </Link>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-[#21262d] space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#7d8590]">Projetos</span>
+                  <span className="font-semibold text-[#e6edf3]">12</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#7d8590]">Seguidores</span>
+                  <span className="font-semibold text-[#e6edf3]">1.2k</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-[#7d8590]">Level</span>
+                  <span className="font-semibold text-[#e6edf3]">15</span>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-[#21262d]">
+                <p className="text-xs text-[#7d8590] leading-relaxed">
+                  Desenvolvedor apaixonado por criar soluções inovadoras e compartilhar conhecimento com a comunidade.
+                </p>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content */}
+          <div className="space-y-5">
+            {/* Image Carousel + Project Info - Single Card */}
+            <div className="overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22]">
+              {/* Carousel */}
+              <div className="relative aspect-video overflow-hidden bg-[#0d1117]">
+                <Image
+                  src={projectImages[currentImageIndex]}
+                  alt={`${project.name} - Screenshot ${currentImageIndex + 1}`}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                
+                {/* Navigation Buttons */}
+                {projectImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-[#30363d] bg-[#0d1117]/80 text-[#e6edf3] backdrop-blur-sm transition-all hover:bg-[#161b22] hover:border-[#484f58]"
+                      aria-label="Imagem anterior"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-[#30363d] bg-[#0d1117]/80 text-[#e6edf3] backdrop-blur-sm transition-all hover:bg-[#161b22] hover:border-[#484f58]"
+                      aria-label="Próxima imagem"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </>
+                )}
+
+                {/* Indicators */}
+                {projectImages.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    {projectImages.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className={`h-2 rounded-full transition-all ${
+                          idx === currentImageIndex
+                            ? "w-8 bg-[#58a6ff]"
+                            : "w-2 bg-[#30363d] hover:bg-[#484f58]"
+                        }`}
+                        aria-label={`Ir para imagem ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Image Counter */}
+                <div className="absolute top-3 right-3 rounded-full border border-[#30363d] bg-[#0d1117]/80 px-3 py-1 text-xs font-medium text-[#e6edf3] backdrop-blur-sm">
+                  {currentImageIndex + 1} / {projectImages.length}
+                </div>
+
+                {/* Featured Badge */}
                 {project.featured && (
                   <div className="absolute top-3 left-3">
                     <span className="rounded-full border border-[#d29922]/30 bg-[#0d1117]/80 px-2.5 py-1 text-xs font-semibold text-[#d29922] backdrop-blur-sm">
@@ -118,6 +234,7 @@ export default function ProjectDetailPage() {
                 )}
               </div>
 
+              {/* Project Info */}
               <div className="p-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
@@ -166,7 +283,7 @@ export default function ProjectDetailPage() {
                     className="inline-flex items-center gap-2 rounded-lg bg-[#238636] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#2ea043]"
                   >
                     <Download className="h-4 w-4" />
-                    {project.type === "free" ? "Download grátis" : project.type === "freemium" ? "Baixar versão free" : `Comprar — $${project.price}`}
+                    {project.type === "free" ? "Download grátis" : project.type === "freemium" ? "Baixar versão free" : `Comprar — ${project.price}`}
                   </button>
 
                   {project.repository && (
@@ -204,19 +321,9 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
             </div>
-
-            {/* About */}
-            <div className="rounded-xl border border-[#21262d] bg-[#161b22] p-6">
-              <h2 className="mb-4 text-base font-semibold text-[#e6edf3]">Sobre o projeto</h2>
-              <p className="text-sm leading-7 text-[#8b949e]">
-                {project.description}
-                {" "}Este projeto foi desenvolvido com foco em qualidade e boas práticas de desenvolvimento.
-                Ideal para quem busca uma solução robusta e bem documentada para {project.category.toLowerCase()}.
-              </p>
-            </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Right Sidebar */}
           <aside className="space-y-4">
             {/* Stats */}
             <div className="rounded-xl border border-[#21262d] bg-[#161b22] p-5">
@@ -247,17 +354,40 @@ export default function ProjectDetailPage() {
               </div>
             </div>
 
-            {/* Author */}
+            {/* Contributors */}
             <div className="rounded-xl border border-[#21262d] bg-[#161b22] p-5">
-              <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#484f58]">Autor</h3>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#238636] text-sm font-bold text-white">
-                  {project.author[0]?.toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-[#e6edf3]">@{project.author}</p>
-                  <p className="text-xs text-[#7d8590]">Desenvolvedor</p>
-                </div>
+              <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-[#484f58]">Contribuidores</h3>
+              <div className="space-y-3">
+                {contributors.map((contributor, idx) => (
+                  <Link
+                    key={contributor.id}
+                    href={`/perfil?user=${contributor.username}`}
+                    className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-[#21262d]"
+                  >
+                    <div className="relative h-10 w-10 flex-shrink-0">
+                      <Image
+                        src={contributor.avatar}
+                        alt={contributor.name}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                      {idx === 0 && (
+                        <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#161b22] bg-[#d29922]">
+                          <Star className="h-2.5 w-2.5 fill-current text-[#0d1117]" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-[#e6edf3]">{contributor.name}</p>
+                      <p className="truncate text-xs text-[#7d8590]">@{contributor.username}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t border-[#21262d]">
+                <p className="text-xs text-[#7d8590] text-center">
+                  {contributors.length} {contributors.length === 1 ? "contribuidor" : "contribuidores"}
+                </p>
               </div>
             </div>
 

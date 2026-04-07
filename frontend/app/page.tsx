@@ -97,17 +97,7 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 hero-grid" />
 
         <Container size="lg">
-          <div className="relative pb-20 pt-24 sm:pt-32 lg:pt-40">
-            {/* Live badge */}
-            <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-[#388bfd]/20 bg-[#388bfd]/6 px-4 py-2 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3fb950] opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#3fb950]" />
-              </span>
-              <span className="text-xs font-semibold text-[#79c0ff] tracking-wide">
-                Plataforma em crescimento · 4.8k devs ativos agora
-              </span>
-            </div>
+          <div className="relative pb-20 pt-12 sm:pt-16 lg:pt-20">
 
             <div className="max-w-4xl">
               <h1 className="mb-6 text-[clamp(2.6rem,6.5vw,5rem)] font-bold leading-[1.04] tracking-[-0.02em] text-[#e6edf3]">
@@ -302,7 +292,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                 <Button size="lg" variant="success" asChild>
-                  <Link href="/login">Criar conta grátis</Link>
+                  <Link href="/register">Criar conta grátis</Link>
                 </Button>
                 <Button size="lg" variant="secondary" asChild>
                   <Link href={ROUTES.PROJECTS}>Explorar projetos</Link>

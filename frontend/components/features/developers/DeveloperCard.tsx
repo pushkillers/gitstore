@@ -44,7 +44,7 @@ export function DeveloperCard({ developer, showRank = false, isCurrentUser = fal
     <div className={`group relative bg-gradient-to-b from-[#161b22] to-[#0d1117] border rounded-xl overflow-hidden hover:border-[#1f6feb] transition-all duration-300 hover:shadow-2xl hover:shadow-[#1f6feb]/30 hover:-translate-y-1 h-full flex flex-col ${isCurrentUser ? "border-[#58a6ff]/40 shadow-[0_0_20px_rgba(88,166,255,0.1)]" : "border-[#30363d]"}`}>
       <div className="absolute inset-0 bg-gradient-to-b from-[#1f6feb]/0 via-[#1f6feb]/0 to-[#1f6feb]/0 group-hover:from-[#1f6feb]/5 group-hover:via-[#1f6feb]/0 group-hover:to-[#1f6feb]/5 transition-all duration-500 pointer-events-none" />
       
-      <div className="relative h-48 bg-gradient-to-br from-[#1f6feb]/20 to-[#8b5cf6]/20 overflow-hidden">
+      <div className="relative h-36 bg-gradient-to-br from-[#1f6feb]/20 to-[#8b5cf6]/20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-shimmer" />
         <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC40Ij48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')]" />
         
@@ -91,7 +91,7 @@ export function DeveloperCard({ developer, showRank = false, isCurrentUser = fal
         </div>
       </div>
       
-      <div className="p-5 flex-1 flex flex-col">
+      <div className="p-4 flex-1 flex flex-col">
         <div className="mb-3">
           <div className="flex items-start justify-between gap-2">
             <div>

@@ -71,7 +71,7 @@ interface DropdownItemProps {
 
 export function DropdownItem({ icon, children, onClick, href, variant = "default", badge }: DropdownItemProps) {
   const baseClasses = `
-    flex items-center gap-3 px-4 py-3 text-sm transition-colors cursor-pointer
+    flex items-center gap-3 px-4 py-3 text-base transition-colors cursor-pointer
     ${variant === "danger" 
       ? "text-[#f85149] hover:bg-[#f851491a]" 
       : "text-[#e6edf3] hover:bg-[#21262d]"
@@ -83,7 +83,7 @@ export function DropdownItem({ icon, children, onClick, href, variant = "default
       {icon && <span className="flex-shrink-0">{icon}</span>}
       <span className="flex-1">{children}</span>
       {badge !== undefined && (
-        <span className="px-2 py-0.5 text-xs font-semibold bg-[#1f6feb] text-white rounded-full">
+        <span className="px-2.5 py-1 text-sm font-semibold bg-[#1f6feb] text-white rounded-full">
           {badge}
         </span>
       )}
@@ -111,7 +111,7 @@ export function DropdownDivider() {
 
 export function DropdownHeader({ children }: { children: ReactNode }) {
   return (
-    <div className="px-4 py-3 text-xs font-semibold text-[#7d8590] uppercase tracking-wider border-b border-[#30363d]">
+    <div className="px-4 py-3 text-sm font-semibold text-[#7d8590] uppercase tracking-wider border-b border-[#30363d]">
       {children}
     </div>
   );

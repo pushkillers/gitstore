@@ -17,8 +17,8 @@ import {
   User,
   X,
 } from "lucide-react";
-import { PROFILE_KEY, notifyProfileUpdate } from "@/lib/useProfile";
-import { saveProfile, getToken } from "@/lib/auth";
+import { PROFILE_KEY, notifyProfileUpdate } from "@/hooks/useProfile";
+import { saveProfile, getToken } from "@/lib/api/auth";
 
 type SectionId = "profile" | "notifications" | "security" | "appearance" | "api" | "connections";
 
@@ -320,8 +320,17 @@ export default function SettingsPage() {
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#e6edf3]">Configurações</h1>
-          <p className="mt-2 text-[#7d8590]">Gerencie suas preferências e configurações da conta</p>
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#238636,#2ea043)] px-5 py-3 text-base font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98]"
+          >
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar
+          </button>
+          <p className="mt-4 text-[#7d8590]">Gerencie suas preferências e configurações da conta</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -1055,8 +1064,6 @@ function ApiSettings() {
 }
 
 function ConnectionsSettings() {
-  const API = "/api/backend";
-  const BACKEND_DIRECT = "http://localhost:3001"; // para redirects OAuth
   const token = getToken();
   const [googleConnected, setGoogleConnected] = useState(false);
   const [googleEmail, setGoogleEmail] = useState<string | null>(null);
@@ -1064,53 +1071,46 @@ function ConnectionsSettings() {
   const [disconnecting, setDisconnecting] = useState(false);
   const [msg, setMsg] = useState("");
 
-  // Lê status da conexão Google do backend
+  // Mock: simula status da conexão Google (sempre desconectado inicialmente)
   useEffect(() => {
     if (!token) { setLoading(false); return; }
-    fetch(`${API}/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then(({ user }) => {
-        setGoogleConnected(!!user?.googleConnected);
-        setGoogleEmail(user?.googleEmail ?? null);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    
+    // Simula delay de carregamento
+    setTimeout(() => {
+      setGoogleConnected(false);
+      setGoogleEmail(null);
+      setLoading(false);
+    }, 300);
 
-    // Detecta retorno do callback de conexão
+    // Detecta retorno do callback de conexão (mock)
     const params = new URLSearchParams(window.location.search);
     if (params.get("connected") === "google") {
-      setMsg("Google conectado com sucesso!");
+      setMsg("Google conectado com sucesso! (Mock)");
       window.history.replaceState({}, "", "/settings");
     }
     if (params.get("error") === "google_already_linked") {
-      setMsg("Esta conta Google já está vinculada a outro usuário.");
+      setMsg("Esta conta Google já está vinculada a outro usuário. (Mock)");
       window.history.replaceState({}, "", "/settings");
     }
-  }, [API, token]);
+  }, [token]);
 
   const handleConnect = () => {
     if (!token) return;
-    window.location.href = `${BACKEND_DIRECT}/auth/google/connect?auth=${token}`;
+    // Mock: simula conexão com Google
+    setMsg("Funcionalidade mockada - Google OAuth não implementado");
   };
 
   const handleDisconnect = async () => {
     if (!token) return;
     setDisconnecting(true);
-    try {
-      const res = await fetch(`${API}/auth/google/disconnect`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const json = await res.json();
-      if (!res.ok) { setMsg(json.error); return; }
-      setGoogleConnected(false);
-      setGoogleEmail(null);
-      setMsg("Google desconectado.");
-    } catch {
-      setMsg("Erro ao desconectar.");
-    } finally {
-      setDisconnecting(false);
-    }
+    
+    // Simula delay de rede
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    setGoogleConnected(false);
+    setGoogleEmail(null);
+    setMsg("Google desconectado. (Mock)");
+    setDisconnecting(false);
   };
 
   return (

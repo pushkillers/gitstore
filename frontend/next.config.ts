@@ -1,14 +1,29 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return [
+  images: {
+    remotePatterns: [
       {
-        source: "/api/backend/:path*",
-        destination: "http://localhost:3001/:path*",
+        protocol: "https",
+        hostname: "images.unsplash.com",
       },
-    ];
+      {
+        protocol: "https",
+        hostname: "api.dicebear.com",
+      },
+    ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  // Proxy removido - modo mock sem backend
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/api/backend/:path*",
+  //       destination: "http://localhost:3001/:path*",
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;

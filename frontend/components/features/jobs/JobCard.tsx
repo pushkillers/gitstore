@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Job } from "@/types";
 import { MapPin, Clock, DollarSign, Users, Zap } from "lucide-react";
 
@@ -28,13 +29,44 @@ export function JobCard({ job }: { job: Job }) {
   const exp = EXP_LABELS[job.experienceLevel] ?? { label: job.experienceLevel, color: "#7d8590" };
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22] transition-all duration-200 hover:border-[#30363d] hover:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
-      {/* Urgent stripe */}
-      {job.urgent && (
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-[#f85149] to-transparent" />
-      )}
+    <Link href={`/jobs/${job.id}`} className="block h-full">
+      <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22] transition-all duration-200 hover:border-[#30363d] hover:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
+      {/* Banner - padronizado */}
+      <div className="relative h-36 overflow-hidden">
+        {/* Background image */}
+        {job.thumbnail && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img 
+            src={job.thumbnail} 
+            alt={job.title}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        )}
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#238636]/20 to-[#3fb950]/10" />
+        {!job.thumbnail && (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "radial-gradient(circle, rgba(63,185,80,0.08) 1px, transparent 1px)",
+              backgroundSize: "20px 20px",
+            }}
+          />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-[#0d1117]/75 backdrop-blur-sm transition-transform duration-200 group-hover:scale-105 text-[#3fb950]">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+        {/* Urgent stripe */}
+        {job.urgent && (
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-[#f85149] to-transparent z-10" />
+        )}
+      </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4">
         {/* Header */}
         <div className="mb-3 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -111,5 +143,6 @@ export function JobCard({ job }: { job: Job }) {
         <span className="text-[10px] text-[#484f58]">{daysAgo(job.postedAt)}</span>
       </div>
     </article>
+    </Link>
   );
 }

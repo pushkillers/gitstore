@@ -2,12 +2,21 @@
 
 import { TeamCard } from "./TeamCard";
 
-const teams = [
+interface TeamMember { id: number; name: string; avatar: string; }
+interface Team {
+  id: number; name: string; description: string;
+  logo: string; members: TeamMember[]; memberCount: number;
+  projectCount: number; tags: string[]; isPublic: boolean; level: number;
+  banner: string;
+  joinType?: 'instant' | 'request';
+}
+
+const teams: Team[] = [
   {
     id: 1,
     name: "DevSquad Elite",
     description: "Equipe focada em desenvolvimento full-stack com React, Node.js e TypeScript. Buscamos criar soluções inovadoras.",
-    banner: "/teams/banner1.jpg",
+    banner: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920&h=1080&fit=crop",
     logo: "🚀",
     members: [
       { id: 1, name: "João", avatar: "J" },
@@ -21,13 +30,14 @@ const teams = [
     projectCount: 8,
     tags: ["React", "Node.js", "TypeScript", "MongoDB"],
     isPublic: true,
+    joinType: 'instant',
     level: 15,
   },
   {
     id: 2,
     name: "Code Warriors",
     description: "Guerreiros do código unidos para dominar o mundo do desenvolvimento. Especialistas em arquitetura de software.",
-    banner: "/teams/banner2.jpg",
+    banner: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1920&h=1080&fit=crop",
     logo: "⚔️",
     members: [
       { id: 1, name: "Lucas", avatar: "L" },
@@ -38,13 +48,14 @@ const teams = [
     projectCount: 15,
     tags: ["Python", "Django", "AWS", "Docker"],
     isPublic: true,
+    joinType: 'request',
     level: 22,
   },
   {
     id: 3,
     name: "Pixel Pioneers",
     description: "Pioneiros em design e desenvolvimento frontend. Criamos experiências visuais incríveis e interfaces modernas.",
-    banner: "/teams/banner3.jpg",
+    banner: "https://images.unsplash.com/photo-1547658719-da2b51169166?w=1920&h=1080&fit=crop",
     logo: "🎨",
     members: [
       { id: 1, name: "Sofia", avatar: "S" },
@@ -56,13 +67,14 @@ const teams = [
     projectCount: 12,
     tags: ["UI/UX", "React", "Tailwind", "Figma"],
     isPublic: true,
+    joinType: 'instant',
     level: 18,
   },
   {
     id: 4,
     name: "Data Wizards",
     description: "Magos dos dados especializados em análise, machine learning e inteligência artificial.",
-    banner: "/teams/banner4.jpg",
+    banner: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&h=1080&fit=crop",
     logo: "🧙",
     members: [
       { id: 1, name: "Roberto", avatar: "R" },
@@ -72,13 +84,14 @@ const teams = [
     projectCount: 5,
     tags: ["Python", "ML", "TensorFlow", "Data Science"],
     isPublic: false,
+    joinType: 'request',
     level: 12,
   },
   {
     id: 5,
     name: "Cloud Ninjas",
     description: "Ninjas da nuvem especializados em infraestrutura, DevOps e arquitetura cloud-native.",
-    banner: "/teams/banner5.jpg",
+    banner: "https://images.unsplash.com/photo-1667372393119-c8f473882e8e?w=1920&h=1080&fit=crop",
     logo: "☁️",
     members: [
       { id: 1, name: "Thiago", avatar: "T" },
@@ -91,13 +104,14 @@ const teams = [
     projectCount: 20,
     tags: ["AWS", "Kubernetes", "Terraform", "CI/CD"],
     isPublic: true,
+    joinType: 'instant',
     level: 25,
   },
   {
     id: 6,
     name: "Mobile Masters",
     description: "Mestres do desenvolvimento mobile com foco em React Native e Flutter para criar apps nativos.",
-    banner: "/teams/banner6.jpg",
+    banner: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1920&h=1080&fit=crop",
     logo: "📱",
     members: [
       { id: 1, name: "Beatriz", avatar: "B" },
@@ -108,6 +122,7 @@ const teams = [
     projectCount: 11,
     tags: ["React Native", "Flutter", "iOS", "Android"],
     isPublic: true,
+    joinType: 'request',
     level: 16,
   },
 ];

@@ -17,6 +17,7 @@ export const mockProjects: Project[] = [
     rating: 4.8,
     downloads: 5420,
     featured: true,
+    thumbnail: "https://images.unsplash.com/photo-1557821552-17105176677c?w=1920&h=1080&fit=crop",
   },
   {
     id: 2,
@@ -33,6 +34,7 @@ export const mockProjects: Project[] = [
     rating: 4.5,
     downloads: 12300,
     featured: true,
+    thumbnail: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1920&h=1080&fit=crop",
   },
   {
     id: 3,
@@ -49,6 +51,7 @@ export const mockProjects: Project[] = [
     category: "Produtividade",
     rating: 4.6,
     downloads: 8900,
+    thumbnail: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1920&h=1080&fit=crop",
   },
   {
     id: 4,
@@ -65,6 +68,7 @@ export const mockProjects: Project[] = [
     rating: 4.7,
     downloads: 15600,
     featured: true,
+    thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1920&h=1080&fit=crop",
   },
   {
     id: 5,
@@ -80,6 +84,7 @@ export const mockProjects: Project[] = [
     category: "Analytics",
     rating: 4.9,
     downloads: 3200,
+    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&h=1080&fit=crop",
   },
   {
     id: 6,
@@ -94,6 +99,7 @@ export const mockProjects: Project[] = [
     category: "CMS",
     rating: 4.4,
     downloads: 6700,
+    thumbnail: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&h=1080&fit=crop",
   },
   {
     id: 7,
@@ -109,6 +115,7 @@ export const mockProjects: Project[] = [
     category: "Fintech",
     rating: 4.8,
     downloads: 2100,
+    thumbnail: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1920&h=1080&fit=crop",
   },
   {
     id: 8,
@@ -123,6 +130,7 @@ export const mockProjects: Project[] = [
     category: "Blog",
     rating: 4.3,
     downloads: 9800,
+    thumbnail: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&h=1080&fit=crop",
   },
 ];
 
@@ -141,6 +149,7 @@ export const mockJobs: Job[] = [
     postedAt: "2026-04-03",
     proposalsCount: 12,
     client: { name: "TechStore Brasil", rating: 4.9, jobsPosted: 8 },
+    thumbnail: "https://images.unsplash.com/photo-1557821552-17105176677c?w=1920&h=1080&fit=crop",
   },
   {
     id: 2,
@@ -156,6 +165,7 @@ export const mockJobs: Job[] = [
     postedAt: "2026-04-02",
     proposalsCount: 7,
     client: { name: "FoodTech Startup", rating: 4.7, jobsPosted: 3 },
+    thumbnail: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=1920&h=1080&fit=crop",
   },
   {
     id: 3,
@@ -171,6 +181,7 @@ export const mockJobs: Job[] = [
     postedAt: "2026-04-01",
     proposalsCount: 23,
     client: { name: "DataCorp Analytics", rating: 4.8, jobsPosted: 15 },
+    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&h=1080&fit=crop",
   },
   {
     id: 4,
@@ -186,6 +197,7 @@ export const mockJobs: Job[] = [
     postedAt: "2026-04-04",
     proposalsCount: 5,
     client: { name: "SuporteTech", rating: 4.6, jobsPosted: 12 },
+    thumbnail: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1920&h=1080&fit=crop",
   },
   {
     id: 5,
@@ -201,6 +213,7 @@ export const mockJobs: Job[] = [
     postedAt: "2026-04-03",
     proposalsCount: 18,
     client: { name: "Marketing Pro", rating: 4.5, jobsPosted: 25 },
+    thumbnail: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=1920&h=1080&fit=crop",
   },
   {
     id: 6,
@@ -216,5 +229,6 @@ export const mockJobs: Job[] = [
     postedAt: "2026-03-30",
     proposalsCount: 9,
     client: { name: "CloudFirst", rating: 4.9, jobsPosted: 6 },
+    thumbnail: "https://images.unsplash.com/photo-1667372393119-c8f473882e8e?w=1920&h=1080&fit=crop",
   },
 ];

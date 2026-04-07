@@ -1,19 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { JobCard } from "@/components/features/jobs/JobCard";
 import { JobFilters } from "@/components/features/jobs/JobFilters";
 import { CreateJobModal } from "@/components/features/jobs/CreateJobModal";
 import { mockJobs } from "@/lib/data";
-import { Briefcase, Plus, TrendingUp, Users, CheckCircle, DollarSign } from "lucide-react";
-
-const stats = [
-  { icon: Briefcase,    value: "1.2k+", label: "Vagas publicadas",  color: "#58a6ff" },
-  { icon: Users,        value: "850+",  label: "Freelancers ativos", color: "#3fb950" },
-  { icon: CheckCircle,  value: "95%",   label: "Taxa de sucesso",    color: "#d29922" },
-  { icon: DollarSign,   value: "R$2M+", label: "Em pagamentos",      color: "#a371f7" },
-];
+import { Briefcase, Plus, TrendingUp } from "lucide-react";
 
 export default function JobsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -22,22 +15,57 @@ export default function JobsPage() {
   return (
     <div className="min-h-screen bg-[#0d1117]">
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-[#21262d] py-12">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_-10%,rgba(88,166,255,0.08),transparent)]" />
-        <Container>
-          <div className="flex flex-col items-center text-center">
+      <div className="relative overflow-hidden border-b border-[#21262d] bg-[#0d1117] py-12">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_-10%,rgba(139,148,158,0.09),transparent)]" />
+        <Container size="lg">
+          <div className="relative flex flex-col items-center text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#30363d] bg-[#161b22] px-3.5 py-1.5 text-xs font-medium text-[#8b949e]">
-              <Briefcase className="h-3.5 w-3.5" />
+              <Briefcase className="h-3.5 w-3.5 text-[#8b949e]" />
               Trabalhos Freelancer
             </div>
             <h1 className="mb-3 text-4xl font-bold tracking-tight text-[#e6edf3]">
               Encontre trabalhos ou{" "}
-              <span className="bg-gradient-to-r from-[#58a6ff] to-[#3fb950] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#e6edf3] to-[#c9d1d9] bg-clip-text text-transparent">
                 publique uma vaga
               </span>
             </h1>
             <p className="mb-8 max-w-lg text-sm text-[#7d8590]">
               Conecte-se com desenvolvedores talentosos ou encontre oportunidades freelance alinhadas com sua stack
+            </p>
+
+            {/* Stats */}
+            <div className="flex items-center gap-6 text-sm">
+              {[
+                { label: "Vagas Ativas", value: "240+" },
+                { label: "Freelancers", value: "2.1k+" },
+                { label: "Projetos Concluídos", value: "890+" },
+              ].map((s, i) => (
+                <React.Fragment key={s.label}>
+                  {i > 0 && <div className="h-4 w-px bg-[#30363d]" />}
+                  <div className="text-center">
+                    <span className="font-bold text-[#e6edf3]">{s.value}</span>
+                    <span className="ml-1.5 text-[#7d8590]">{s.label}</span>
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </Container>
+      </div>
+
+      {/* Content */}
+      <Container size="lg">
+        <div className="py-6">
+          {/* Filters */}
+          <div className="mb-5 rounded-xl border border-[#21262d] bg-[#161b22] p-4">
+            <JobFilters onFilterChange={setFilteredJobs} />
+          </div>
+
+          {/* Action bar */}
+          <div className="mb-6 flex items-center justify-between">
+            <p className="text-sm text-[#7d8590]">
+              <span className="font-semibold text-[#e6edf3]">{filteredJobs.length}</span>{" "}
+              {filteredJobs.length === 1 ? "vaga" : "vagas"}
             </p>
             <button
               onClick={() => setIsCreateModalOpen(true)}
@@ -47,43 +75,15 @@ export default function JobsPage() {
               Publicar vaga
             </button>
           </div>
-        </Container>
-      </div>
 
-      {/* Stats */}
-      <div className="border-b border-[#21262d]">
-        <Container>
-          <div className="grid grid-cols-2 divide-x divide-y divide-[#21262d] md:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="flex items-center gap-3 px-6 py-5">
-                <s.icon className="h-5 w-5 flex-shrink-0" style={{ color: s.color }} />
-                <div>
-                  <p className="text-lg font-bold text-[#e6edf3]">{s.value}</p>
-                  <p className="text-xs text-[#7d8590]">{s.label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </div>
-
-      {/* Content */}
-      <Container>
-        <div className="py-6">
-          <JobFilters onFilterChange={setFilteredJobs} />
-
-          <div className="mt-6 mb-4 flex items-center justify-between">
-            <p className="text-sm text-[#7d8590]">
-              <span className="font-semibold text-[#e6edf3]">{filteredJobs.length}</span>{" "}
-              {filteredJobs.length === 1 ? "vaga" : "vagas"}
-            </p>
+          <div className="mb-4 flex items-center justify-end">
             <div className="flex items-center gap-1.5 text-xs text-[#484f58]">
               <TrendingUp className="h-3.5 w-3.5" />
               Atualizado agora
             </div>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredJobs.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}

@@ -25,14 +25,12 @@ export const PROJECT_TYPES = [
   { value: "all", label: "Todos" },
   { value: "free", label: "Gratuitos" },
   { value: "paid", label: "Pagos" },
-  { value: "freemium", label: "Freemium" },
 ] as const;
 
 export const ROUTES = {
   HOME: "/",
   PROJECTS: "/projects",
   PROJECT_DETAIL: (id: number) => `/projects/${id}`,
-  PUBLISH: "/publish",
   TEAMS: "/teams",
   TEAM_DETAIL: (id: number) => `/teams/${id}`,
   DEVELOPERS: "/developers",
