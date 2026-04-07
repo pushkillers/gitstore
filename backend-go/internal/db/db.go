@@ -51,8 +51,29 @@ type PublicUser struct {
 	CreatedAt    string `json:"createdAt"`
 }
 
+type Project struct {
+	ID          int      `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	AuthorID    string   `json:"authorId"`
+	Author      string   `json:"author"`
+	Stars       int      `json:"stars"`
+	Language    string   `json:"language"`
+	Tags        []string `json:"tags"`
+	Repository  string   `json:"repository,omitempty"`
+	CreatedAt   string   `json:"createdAt"`
+	UpdatedAt   string   `json:"updatedAt,omitempty"`
+	Type        string   `json:"type"` // free | paid | freemium
+	Price       float64  `json:"price,omitempty"`
+	Category    string   `json:"category"`
+	Rating      float64  `json:"rating"`
+	Downloads   int      `json:"downloads"`
+	Featured    bool     `json:"featured,omitempty"`
+}
+
 type Database struct {
-	Users []User `json:"users"`
+	Users    []User    `json:"users"`
+	Projects []Project `json:"projects"`
 }
 
 var (
@@ -71,11 +92,14 @@ func Read() Database {
 
 	data, err := os.ReadFile(dbPath)
 	if err != nil {
-		return Database{Users: []User{}}
+		return Database{Users: []User{}, Projects: []Project{}}
 	}
 	var db Database
 	if err := json.Unmarshal(data, &db); err != nil {
-		return Database{Users: []User{}}
+		return Database{Users: []User{}, Projects: []Project{}}
+	}
+	if db.Projects == nil {
+		db.Projects = []Project{}
 	}
 	return db
 }

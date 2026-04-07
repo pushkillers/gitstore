@@ -5,10 +5,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
+	"gitstore/internal/admin"
 	"gitstore/internal/auth"
 	"gitstore/internal/google"
 	"gitstore/internal/middleware"
+	"gitstore/internal/projects"
 
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -48,10 +51,43 @@ func main() {
 	mux.HandleFunc("GET /auth/users",     cors(auth.ListUsers))
 
 	// Google OAuth
-	mux.HandleFunc("GET /auth/google/login",       cors(google.Login))
-	mux.HandleFunc("GET /auth/google/connect",     cors(google.Connect))
-	mux.HandleFunc("GET /auth/google/callback",    cors(google.Callback))
+	mux.HandleFunc("GET /auth/google/login",         cors(google.Login))
+	mux.HandleFunc("GET /auth/google/connect",       cors(google.Connect))
+	mux.HandleFunc("GET /auth/google/callback",      cors(google.Callback))
 	mux.HandleFunc("DELETE /auth/google/disconnect", cors(middleware.RequireAuth(google.Disconnect)))
+
+	// Projects
+	mux.HandleFunc("GET /projects", cors(projects.List))
+	mux.HandleFunc("POST /projects", cors(middleware.RequireAuth(projects.Create)))
+	mux.HandleFunc("/projects/", cors(func(w http.ResponseWriter, r *http.Request) {
+		// strip trailing slash for bare /projects/
+		if r.URL.Path == "/projects/" {
+			projects.List(w, r)
+			return
+		}
+		// only allow PUT and DELETE on /projects/{id}
+		parts := strings.Split(strings.TrimPrefix(r.URL.Path, "/projects/"), "/")
+		if len(parts) != 1 || parts[0] == "" {
+			http.NotFound(w, r)
+			return
+		}
+		switch r.Method {
+		case http.MethodPut:
+			middleware.RequireAuth(projects.Update)(w, r)
+		case http.MethodDelete:
+			middleware.RequireAuth(projects.Delete)(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
+
+	// Admin — acesso restrito aos criadores
+	mux.HandleFunc("POST /admin/login",           cors(admin.Login))
+	mux.HandleFunc("GET /admin/stats",            cors(middleware.RequireAuth(admin.Stats)))
+	mux.HandleFunc("GET /admin/users",            cors(middleware.RequireAuth(admin.ListUsers)))
+	mux.HandleFunc("DELETE /admin/users/{id}",    cors(middleware.RequireAuth(admin.DeleteUser)))
+	mux.HandleFunc("GET /admin/projects",         cors(middleware.RequireAuth(admin.ListProjects)))
+	mux.HandleFunc("DELETE /admin/projects/{id}", cors(middleware.RequireAuth(admin.DeleteProject)))
 
 	log.Printf("✅ GitStore API (Go) rodando em http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(":"+port, mux))

@@ -5,7 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { ProjectGrid } from "@/components/features/projects/ProjectGrid";
 import { ProjectFilters } from "@/components/features/projects/ProjectFilters";
 import { mockProjects } from "@/lib/data";
-import { getPublishedProjects, PROJECTS_CHANGE_EVENT } from "@/lib/projects";
+import { fetchProjects, PROJECTS_CHANGE_EVENT } from "@/lib/projects";
 import { Project } from "@/types";
 
 const SORT_OPTIONS = [
@@ -22,29 +22,26 @@ export default function ProjectsPage() {
   const [selectedType, setSelectedType]         = useState("all");
   const [sortBy, setSortBy]                     = useState("popular");
 
-  // Inicializa já com os dados para evitar flash de "0 projetos"
-  const [allProjects, setAllProjects] = useState<Project[]>(() => {
-    if (typeof window === "undefined") return mockProjects;
-    try {
-      const userProjects = getPublishedProjects();
-      const ids = new Set(userProjects.map((p) => p.id));
-      return [...userProjects, ...mockProjects.filter((p) => !ids.has(p.id))];
-    } catch {
-      return mockProjects;
-    }
-  });
+  const [allProjects, setAllProjects] = useState<Project[]>(mockProjects);
+  const [loading, setLoading] = useState(true);
 
-  // Atualiza quando novos projetos são publicados
   useEffect(() => {
-    const load = () => {
-      const userProjects = getPublishedProjects();
-      const ids = new Set(userProjects.map((p) => p.id));
-      setAllProjects([...userProjects, ...mockProjects.filter((p) => !ids.has(p.id))]);
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      const backendProjects = await fetchProjects();
+      if (cancelled) return;
+      // Merge: backend projects first, then mock projects not already present
+      const ids = new Set(backendProjects.map((p: Project) => p.id));
+      setAllProjects([...backendProjects, ...mockProjects.filter((p) => !ids.has(p.id))]);
+      setLoading(false);
     };
-    // Sincroniza no mount (caso o estado inicial tenha sido o fallback SSR)
     load();
     window.addEventListener(PROJECTS_CHANGE_EVENT, load);
-    return () => window.removeEventListener(PROJECTS_CHANGE_EVENT, load);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(PROJECTS_CHANGE_EVENT, load);
+    };
   }, []);
 
   const filtered = allProjects
@@ -76,36 +73,39 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-[#0d1117]">
       {/* Hero */}
-      <div className="relative overflow-hidden border-b border-[#30363d] bg-[#0d1117] py-14">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(88,166,255,0.12),transparent)]" />
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(48,54,61,0.3)_1px,transparent_1px),linear-gradient(90deg,rgba(48,54,61,0.3)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      <div className="relative overflow-hidden border-b border-[#21262d] bg-[#0d1117] py-12">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_-10%,rgba(88,166,255,0.09),transparent)]" />
 
         <Container>
-          <div className="relative text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#58a6ff]/20 bg-[#58a6ff]/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#8ec2ff]">
-              🚀 Marketplace de Projetos
+          <div className="relative flex flex-col items-center text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#30363d] bg-[#161b22] px-3.5 py-1.5 text-xs font-medium text-[#8b949e]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#3fb950]" />
+              Marketplace de Projetos
             </div>
-            <h1 className="mb-4 text-5xl font-bold tracking-tight text-[#e6edf3] md:text-6xl">
+            <h1 className="mb-3 text-4xl font-bold tracking-tight text-[#e6edf3] md:text-5xl">
               Explore{" "}
               <span className="bg-gradient-to-r from-[#58a6ff] to-[#bc8cff] bg-clip-text text-transparent">
                 projetos incríveis
               </span>
             </h1>
-            <p className="mx-auto mb-10 max-w-2xl text-lg text-[#7d8590]">
+            <p className="mb-8 max-w-lg text-sm text-[#7d8590]">
               Descubra templates, ferramentas e soluções prontas criadas pela comunidade
             </p>
 
             {/* Stats */}
-            <div className="mx-auto grid max-w-lg grid-cols-3 gap-4">
+            <div className="flex items-center gap-6 text-sm">
               {[
                 { label: "Projetos", value: allProjects.length.toString() },
                 { label: "Downloads", value: `${(totalDownloads / 1000).toFixed(0)}k+` },
-                { label: "Avaliação média", value: `⭐ ${avgRating}` },
-              ].map((s) => (
-                <div key={s.label} className="rounded-2xl border border-[#30363d] bg-[#161b22]/80 px-4 py-4 backdrop-blur-sm">
-                  <p className="text-2xl font-bold text-[#e6edf3]">{s.value}</p>
-                  <p className="mt-1 text-xs text-[#7d8590]">{s.label}</p>
-                </div>
+                { label: "Avaliação", value: `★ ${avgRating}` },
+              ].map((s, i) => (
+                <>
+                  {i > 0 && <div key={`sep-${i}`} className="h-4 w-px bg-[#30363d]" />}
+                  <div key={s.label} className="text-center">
+                    <span className="font-bold text-[#e6edf3]">{s.value}</span>
+                    <span className="ml-1.5 text-[#7d8590]">{s.label}</span>
+                  </div>
+                </>
               ))}
             </div>
           </div>
@@ -113,9 +113,9 @@ export default function ProjectsPage() {
       </div>
 
       <Container>
-        <div className="py-8">
+        <div className="py-6">
           {/* Filters */}
-          <div className="mb-6 rounded-2xl border border-[#30363d] bg-[#161b22] p-4">
+          <div className="mb-5 rounded-xl border border-[#21262d] bg-[#161b22] p-4">
             <ProjectFilters
               searchQuery={searchQuery}
               selectedLanguage={selectedLanguage}
@@ -129,66 +129,69 @@ export default function ProjectsPage() {
           </div>
 
           {/* Results bar */}
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-6 flex items-center justify-between">
             <p className="text-sm text-[#7d8590]">
               <span className="font-semibold text-[#e6edf3]">{filtered.length}</span>{" "}
-              {filtered.length === 1 ? "projeto encontrado" : "projetos encontrados"}
+              {filtered.length === 1 ? "projeto" : "projetos"}
             </p>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-[#7d8590]">Ordenar por</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-xl border border-[#30363d] bg-[#161b22] px-3 py-1.5 text-sm text-[#e6edf3] outline-none focus:border-[#58a6ff] transition-colors cursor-pointer"
-              >
-                {SORT_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="rounded-lg border border-[#30363d] bg-[#161b22] px-3 py-1.5 text-xs text-[#c9d1d9] outline-none transition-colors hover:border-[#484f58] cursor-pointer"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
           </div>
 
           {/* Featured */}
-          {featured.length > 0 && (
-            <div className="mb-12">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#d29922]/20 bg-[#d29922]/10 text-[#d29922]">⭐</div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[#d29922]">Em destaque</p>
-                  <h2 className="text-xl font-bold text-[#e6edf3]">Projetos em Destaque</h2>
-                </div>
+          {!loading && featured.length > 0 && (
+            <div className="mb-10">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#d29922]">Em destaque</span>
               </div>
               <ProjectGrid projects={featured} />
             </div>
           )}
 
           {/* All */}
-          {regular.length > 0 && (
+          {!loading && regular.length > 0 && (
             <div>
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#58a6ff]/20 bg-[#58a6ff]/10 text-[#58a6ff]">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
+              {featured.length > 0 && (
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[#7d8590]">Todos os projetos</span>
                 </div>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[#58a6ff]">Todos os projetos</p>
-                  <h2 className="text-xl font-bold text-[#e6edf3]">Explorar catálogo</h2>
-                </div>
-              </div>
+              )}
               <ProjectGrid projects={regular} />
             </div>
           )}
 
+          {/* Loading skeleton */}
+          {loading && (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22] animate-pulse">
+                  <div className="h-40 bg-[#21262d]" />
+                  <div className="p-4 space-y-2.5">
+                    <div className="h-3.5 w-3/4 rounded-full bg-[#21262d]" />
+                    <div className="h-3 w-full rounded-full bg-[#21262d]" />
+                    <div className="h-3 w-1/2 rounded-full bg-[#21262d]" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Empty */}
-          {filtered.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-[#30363d] py-20 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#30363d] bg-[#161b22] text-4xl">🔍</div>
-              <h3 className="text-xl font-semibold text-[#e6edf3]">Nenhum projeto encontrado</h3>
-              <p className="mt-2 text-[#7d8590]">Tente ajustar os filtros ou buscar por outros termos</p>
+          {!loading && filtered.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-[#30363d] py-16 text-center">
+              <p className="text-3xl mb-3">🔍</p>
+              <h3 className="text-base font-semibold text-[#e6edf3]">Nenhum projeto encontrado</h3>
+              <p className="mt-1 text-sm text-[#7d8590]">Tente ajustar os filtros</p>
               <button
                 onClick={() => { setSearchQuery(""); setSelectedLanguage(""); setSelectedCategory(""); setSelectedType("all"); }}
-                className="mt-6 rounded-xl border border-[#30363d] px-5 py-2.5 text-sm font-medium text-[#e6edf3] transition-all hover:bg-[#21262d]"
+                className="mt-5 rounded-lg border border-[#30363d] px-4 py-2 text-sm text-[#c9d1d9] transition-colors hover:border-[#484f58] hover:text-[#e6edf3]"
               >
                 Limpar filtros
               </button>
