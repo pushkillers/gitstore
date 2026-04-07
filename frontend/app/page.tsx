@@ -5,246 +5,230 @@ import { Button } from "@/components/ui/Button";
 import { ROUTES } from "@/constants";
 import { mockProjects } from "@/lib/data";
 
-const featuredProjects = mockProjects.slice(0, 3);
+const featuredProjects = mockProjects.filter((p) => p.featured).slice(0, 3);
 
-const heroSignals = [
-  "Matching por stack",
-  "Equipes remotas",
-  "Projetos open source",
-  "Vagas para contribuir",
+const STATS = [
+  { value: "12k+",  label: "Projetos publicados",  color: "#58a6ff" },
+  { value: "4.8k+", label: "Desenvolvedores ativos", color: "#3fb950" },
+  { value: "850+",  label: "Equipes formadas",       color: "#d29922" },
+  { value: "R$8M+", label: "Em transações",          color: "#a371f7" },
 ];
 
-const workflowSteps = [
+const FEATURES = [
   {
-    title: "Publique sua ideia",
-    description: "Apresente seu projeto com contexto tecnico, objetivos e stack ideal para atrair as pessoas certas.",
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V7" />
       </svg>
     ),
+    title: "Marketplace de Projetos",
+    desc: "Compre, venda e distribua projetos de software com controle total sobre licenciamento e precificação.",
+    color: "#58a6ff",
   },
   {
-    title: "Conecte talento certo",
-    description: "Filtre por linguagem, senioridade e disponibilidade para montar um time alinhado ao ritmo do produto.",
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
+    title: "Matching de Talentos",
+    desc: "Algoritmo inteligente que conecta projetos com desenvolvedores pelo fit de stack, senioridade e disponibilidade.",
+    color: "#3fb950",
   },
   {
-    title: "Ganhe velocidade",
-    description: "Centralize oportunidades, pessoas e aprendizado em um fluxo continuo de descoberta e colaboracao.",
     icon: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
       </svg>
     ),
+    title: "Pagamentos Seguros",
+    desc: "Escrow integrado com Stripe para freelancers e compradores. Dinheiro liberado apenas após entrega confirmada.",
+    color: "#d29922",
+  },
+  {
+    icon: (
+      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    title: "Sistema de XP & Ranking",
+    desc: "Gamificação real: ganhe XP publicando projetos, recebendo curtidas e colaborando. Suba no ranking da comunidade.",
+    color: "#a371f7",
   },
 ];
 
-const communityPulse = [
-  { label: "Novos projetos hoje", value: "48", tone: "text-[#58a6ff]" },
-  { label: "Colaboradores ativos", value: "312", tone: "text-[#3fb950]" },
-  { label: "Vagas abertas", value: "27", tone: "text-[#d29922]" },
-  { label: "Pitchs revisados", value: "96", tone: "text-[#a371f7]" },
-];
-
-const trendingStacks = ["Next.js", "Python", "Open Source", "IA aplicada", "Design System", "DevOps"];
-
-const tractionCards = [
+const TESTIMONIALS = [
   {
-    title: "Taxa de resposta",
-    value: "92%",
-    description: "Projetos publicados com detalhes claros recebem contato inicial em ate 48h.",
-    trend: "+11% este mes",
+    quote: "Publiquei meu boilerplate Next.js e em 3 dias já tinha 40 downloads. A plataforma é o que faltava para monetizar projetos open source.",
+    name: "Ana Silva",
+    role: "Senior Frontend Dev",
+    avatar: "AS",
+    color: "#58a6ff",
   },
   {
-    title: "Entrega colaborativa",
-    value: "3.4x",
-    description: "Times criados pela plataforma chegam no primeiro milestone mais rapido.",
-    trend: "Aceleracao media",
+    quote: "Encontrei um time completo para meu SaaS em menos de uma semana. O matching por stack é absurdamente preciso.",
+    name: "Carlos Mendes",
+    role: "Founder & CTO",
+    avatar: "CM",
+    color: "#3fb950",
   },
   {
-    title: "Retencao de talentos",
-    value: "81%",
-    description: "Contribuidores que entram por fit de stack tendem a permanecer no projeto.",
-    trend: "Com base no ultimo trimestre",
+    quote: "Como freelancer, o GitStore me trouxe 3 contratos em um mês. Os clientes já chegam com contexto técnico claro.",
+    name: "Beatriz Costa",
+    role: "Full Stack Developer",
+    avatar: "BC",
+    color: "#d29922",
   },
 ];
+
+const LOGOS = ["Nubank", "iFood", "Mercado Livre", "Totvs", "RD Station", "Conta Azul"];
 
 export default function Home() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-[#21262d] bg-[#0d1117] py-14 sm:py-20 lg:py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_16%,rgba(56,139,253,0.18),transparent_36%),radial-gradient(circle_at_88%_10%,rgba(63,185,80,0.12),transparent_34%),radial-gradient(circle_at_50%_85%,rgba(210,153,34,0.08),transparent_38%)]" />
-        <div className="absolute inset-0 hero-grid-layer" />
-        <div className="absolute inset-0 hero-noise opacity-[0.35]" />
+      {/* ─── HERO ─── */}
+      <section className="relative overflow-hidden bg-[#0d1117]">
+        {/* Background layers */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-40 -top-40 h-[700px] w-[700px] rounded-full bg-[#1f6feb]/8 blur-[140px]" />
+          <div className="absolute -right-40 top-20 h-[500px] w-[500px] rounded-full bg-[#3fb950]/6 blur-[120px]" />
+          <div className="absolute bottom-0 left-1/2 h-[400px] w-[800px] -translate-x-1/2 rounded-full bg-[#a371f7]/5 blur-[120px]" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 hero-grid" />
 
-        <Container className="relative">
-          <div className="mx-auto max-w-5xl">
+        <Container size="lg">
+          <div className="relative pb-20 pt-24 sm:pt-32 lg:pt-40">
+            {/* Live badge */}
+            <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border border-[#388bfd]/20 bg-[#388bfd]/6 px-4 py-2 backdrop-blur-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3fb950] opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#3fb950]" />
+              </span>
+              <span className="text-xs font-semibold text-[#79c0ff] tracking-wide">
+                Plataforma em crescimento · 4.8k devs ativos agora
+              </span>
+            </div>
+
             <div className="max-w-4xl">
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#1f6feb]/25 bg-[#1f6feb]/10 px-4 py-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3fb950] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#3fb950]" />
-                </span>
-                <span className="text-sm font-medium text-[#58a6ff]">Plataforma em crescimento para quem quer construir junto</span>
-              </div>
-
-              <h1 className="mb-5 text-5xl font-bold leading-[0.92] tracking-tight text-[#e6edf3] sm:text-6xl lg:text-7xl">
-                Tire projetos do papel com uma comunidade pronta para colaborar.
+              <h1 className="mb-6 text-[clamp(2.6rem,6.5vw,5rem)] font-bold leading-[1.04] tracking-[-0.02em] text-[#e6edf3]">
+                O marketplace onde{" "}
+                <span className="bg-gradient-to-r from-[#58a6ff] via-[#79c0ff] to-[#3fb950] bg-clip-text text-transparent">
+                  código vira produto
+                </span>{" "}
+                e devs viram time.
               </h1>
 
-              <p className="mb-8 max-w-2xl text-lg leading-8 text-[#9aa4b2] sm:text-xl">
-                Anuncie ideias, descubra produtos promissores, encontre devs alinhados com sua stack e acelere o que antes ficava parado no backlog.
+              <p className="mb-10 max-w-2xl text-xl leading-8 text-[#8b949e]">
+                Publique projetos, encontre colaboradores pelo fit de stack, feche contratos freelance e suba no ranking da maior comunidade dev do Brasil.
               </p>
 
-              <div className="mb-8 flex flex-wrap gap-3">
-                {heroSignals.map((signal) => (
-                  <span
-                    key={signal}
-                    className="rounded-full border border-[#30363d] bg-[#161b22]/70 px-4 py-2 text-sm font-medium text-[#c9d1d9] transition-colors hover:border-[#58a6ff]/40"
-                  >
-                    {signal}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="flex flex-wrap gap-3">
                 <Button size="lg" variant="success" asChild>
-                  <Link href={ROUTES.PROJECTS} className="min-w-[220px]">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <Link href={ROUTES.PROJECTS}>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    Explorar Projetos
+                    Explorar projetos
                   </Link>
                 </Button>
                 <Button size="lg" variant="secondary" asChild>
-                  <Link href={ROUTES.PUBLISH} className="min-w-[220px]">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <Link href={ROUTES.PUBLISH}>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    Publicar Projeto
+                    Publicar projeto
                   </Link>
                 </Button>
-              </div>
-
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                {[
-                  { value: "1.2k+", label: "Projetos em vitrine" },
-                  { value: "500+", label: "Desenvolvedores ativos" },
-                  { value: "150+", label: "Equipes formadas" },
-                ].map((stat) => (
-                  <div key={stat.label} className="soft-card rounded-2xl px-5 py-4">
-                    <div className="text-3xl font-bold text-gradient">{stat.value}</div>
-                    <div className="mt-1 text-sm text-[#7d8590]">{stat.label}</div>
-                  </div>
-                ))}
+                <Button size="lg" variant="ghost" asChild>
+                  <Link href={ROUTES.JOBS}>Ver vagas →</Link>
+                </Button>
               </div>
             </div>
 
-            <div className="mt-10 overflow-hidden rounded-[28px] border border-[#2a3440] bg-[linear-gradient(140deg,rgba(12,19,33,0.95),rgba(10,26,48,0.9),rgba(18,33,28,0.86))] p-6 shadow-[0_30px_110px_-45px_rgba(0,0,0,0.88)] sm:p-7">
-              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#7d8590]">Radar da comunidade</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-[#e6edf3]">Tudo importante, sem poluicao lateral</h2>
+            {/* Stats row */}
+            <div className="mt-16 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {STATS.map((s) => (
+                <div
+                  key={s.label}
+                  className="group rounded-xl border border-[#21262d] bg-[#161b22]/60 px-5 py-4 backdrop-blur-sm transition-all duration-200 hover:border-[#30363d] hover:bg-[#161b22]"
+                >
+                  <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
+                  <div className="mt-1 text-xs text-[#7d8590]">{s.label}</div>
                 </div>
-                <span className="w-fit rounded-full border border-[#238636]/40 bg-[#238636]/10 px-3 py-1 text-xs font-semibold text-[#3fb950]">
-                  Atualizado ha pouco
+              ))}
+            </div>
+          </div>
+        </Container>
+
+        {/* Bottom fade */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0d1117] to-transparent" />
+      </section>
+
+      {/* ─── SOCIAL PROOF ─── */}
+      <section className="border-y border-[#21262d] bg-[#0d1117] py-6">
+        <Container size="lg">
+          <div className="flex flex-col items-center gap-4 sm:flex-row">
+            <p className="flex-shrink-0 text-xs font-semibold uppercase tracking-[0.2em] text-[#484f58]">
+              Usado por devs de
+            </p>
+            <div className="flex flex-1 flex-wrap items-center justify-center gap-x-8 gap-y-2 sm:justify-start">
+              {LOGOS.map((logo) => (
+                <span key={logo} className="text-sm font-semibold text-[#484f58] transition-colors hover:text-[#7d8590]">
+                  {logo}
                 </span>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {communityPulse.map((item) => (
-                  <div key={item.label} className="rounded-2xl border border-[#2f3d50] bg-[#0b1422]/72 p-4 backdrop-blur-sm transition-all duration-300 hover:border-[#58a6ff]/40">
-                    <div className={`text-3xl font-bold ${item.tone}`}>{item.value}</div>
-                    <div className="mt-1 text-sm text-[#9aa4b2]">{item.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                {trendingStacks.map((category) => (
-                  <span
-                    key={category}
-                    className="rounded-full border border-[#314359] bg-[#111f32]/85 px-3 py-2 text-sm text-[#c9d1d9] transition-colors hover:border-[#58a6ff]/35"
-                  >
-                    {category}
-                  </span>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         </Container>
       </section>
 
-      <section className="border-b border-[#21262d] bg-[#0b1220] py-14">
-        <Container>
-          <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#58a6ff]">Tracao da comunidade</p>
-              <h2 className="mt-2 text-3xl font-bold text-[#e6edf3]">Metricas reais para quem quer executar com mais previsibilidade</h2>
-            </div>
-            <p className="max-w-2xl text-[#7d8590]">Cada indicador aqui aponta para uma jornada mais curta entre ideia, conexao e entrega.</p>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {tractionCards.map((card) => (
-              <article key={card.title} className="group relative overflow-hidden rounded-3xl border border-[#2a3440] bg-[#111a2a] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#58a6ff]/45">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#58a6ff] via-[#2ea043] to-[#d29922] opacity-70" />
-                <p className="text-sm uppercase tracking-[0.18em] text-[#7d8590]">{card.title}</p>
-                <p className="mt-4 text-4xl font-bold text-[#e6edf3]">{card.value}</p>
-                <p className="mt-4 leading-7 text-[#9aa4b2]">{card.description}</p>
-                <p className="mt-5 text-sm font-semibold text-[#58a6ff]">{card.trend}</p>
-              </article>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      <section className="border-b border-[#21262d] bg-[#0d1117] py-14">
-        <Container>
-          <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#58a6ff]">Como funciona</p>
-              <h2 className="mt-2 text-3xl font-bold text-[#e6edf3]">Um fluxo simples para sair da ideia e chegar na entrega</h2>
-            </div>
-            <p className="max-w-2xl text-[#7d8590]">
-              O produto ja tinha uma base boa. Aqui a gente deixa a proposta mais clara logo de cara para aumentar confianca e conversao.
+      {/* ─── FEATURES ─── */}
+      <section className="border-b border-[#21262d] bg-[#0d1117] py-20">
+        <Container size="lg">
+          <div className="mb-14 max-w-2xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#388bfd]">Plataforma completa</p>
+            <h2 className="text-3xl font-bold text-[#e6edf3] sm:text-4xl">
+              Tudo que um dev precisa para crescer
+            </h2>
+            <p className="mt-4 text-[#7d8590]">
+              Do primeiro commit ao primeiro contrato. Uma plataforma construída por devs, para devs.
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
-            {workflowSteps.map((step, index) => (
-              <article
-                key={step.title}
-                className="group rounded-3xl border border-[#30363d] bg-[#161b22]/80 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#58a6ff]/40"
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((f) => (
+              <div
+                key={f.title}
+                className="group relative overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#30363d] hover:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.6)]"
               >
-                <div className="mb-5 flex items-center justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1f6feb]/10 text-[#58a6ff]">
-                    {step.icon}
-                  </div>
-                  <span className="text-sm font-semibold text-[#7d8590]">0{index + 1}</span>
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                  style={{ background: `radial-gradient(circle at 30% 0%, ${f.color}08, transparent 60%)` }}
+                />
+                <div
+                  className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110"
+                  style={{ backgroundColor: `${f.color}12`, color: f.color }}
+                >
+                  {f.icon}
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-[#e6edf3]">{step.title}</h3>
-                <p className="leading-7 text-[#9aa4b2]">{step.description}</p>
-              </article>
+                <h3 className="mb-2 text-sm font-semibold text-[#e6edf3]">{f.title}</h3>
+                <p className="text-xs leading-5 text-[#7d8590]">{f.desc}</p>
+              </div>
             ))}
           </div>
         </Container>
       </section>
 
-      <section className="bg-[#0d1117] py-16">
-        <Container>
-          <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      {/* ─── FEATURED PROJECTS ─── */}
+      <section className="border-b border-[#21262d] bg-[#0d1117] py-20">
+        <Container size="lg">
+          <div className="mb-10 flex items-end justify-between">
             <div>
-              <h2 className="text-3xl font-bold text-[#e6edf3]">Projetos em Destaque</h2>
-              <p className="mt-2 text-[#7d8590]">Explore os projetos que mais estao movimentando a comunidade agora</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#388bfd]">Em destaque</p>
+              <h2 className="text-2xl font-bold text-[#e6edf3]">Projetos mais populares</h2>
             </div>
             <Button variant="ghost" asChild>
-              <Link href={ROUTES.PROJECTS}>
+              <Link href={ROUTES.PROJECTS} className="text-sm">
                 Ver todos
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -253,22 +237,78 @@ export default function Home() {
             </Button>
           </div>
           <ProjectGrid projects={featuredProjects} />
+        </Container>
+      </section>
 
-          <div className="mt-12 overflow-hidden rounded-3xl border border-[#2a3440] bg-[linear-gradient(90deg,rgba(10,30,58,0.95),rgba(18,43,35,0.92),rgba(40,28,14,0.94))] p-8 shadow-[0_30px_100px_-50px_rgba(0,0,0,0.9)]">
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-              <div className="max-w-2xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#9cd1ff]">Pronto para o proximo passo</p>
-                <h3 className="mt-3 text-3xl font-bold leading-tight text-white">Tire seu roadmap da teoria e forme um time que entrega.</h3>
-                <p className="mt-3 text-[#d4e5f5]/85">Comece com uma descricao objetiva e deixe a comunidade certa encontrar seu projeto.</p>
+      {/* ─── TESTIMONIALS ─── */}
+      <section className="border-b border-[#21262d] bg-[#0d1117] py-20">
+        <Container size="lg">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#388bfd]">Depoimentos</p>
+            <h2 className="text-3xl font-bold text-[#e6edf3]">O que a comunidade diz</h2>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {TESTIMONIALS.map((t) => (
+              <div
+                key={t.name}
+                className="relative overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22] p-6"
+              >
+                <div
+                  className="pointer-events-none absolute inset-x-0 top-0 h-px"
+                  style={{ background: `linear-gradient(90deg, transparent, ${t.color}50, transparent)` }}
+                />
+                <div className="mb-4 flex gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <svg key={i} className="h-3.5 w-3.5 fill-[#d29922]" viewBox="0 0 16 16">
+                      <path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>
+                    </svg>
+                  ))}
+                </div>
+                <p className="mb-5 text-sm leading-6 text-[#8b949e]">&ldquo;{t.quote}&rdquo;</p>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                    style={{ backgroundColor: t.color }}
+                  >
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#e6edf3]">{t.name}</p>
+                    <p className="text-xs text-[#7d8590]">{t.role}</p>
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* ─── CTA FINAL ─── */}
+      <section className="bg-[#0d1117] py-24">
+        <Container size="lg">
+          <div className="relative overflow-hidden rounded-2xl border border-[#21262d] bg-[#161b22] px-8 py-16 text-center">
+            <div className="pointer-events-none absolute inset-0">
+              <div className="absolute -left-20 top-0 h-64 w-64 rounded-full bg-[#1f6feb]/10 blur-[80px]" />
+              <div className="absolute -right-20 bottom-0 h-64 w-64 rounded-full bg-[#3fb950]/8 blur-[80px]" />
+              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#388bfd]/40 to-transparent" />
+            </div>
+            <div className="relative">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#388bfd]">Comece hoje</p>
+              <h2 className="mb-4 text-3xl font-bold text-[#e6edf3] sm:text-4xl">
+                Seu próximo projeto começa aqui.
+              </h2>
+              <p className="mx-auto mb-8 max-w-lg text-[#8b949e]">
+                Junte-se a 4.800+ desenvolvedores que já estão construindo, colaborando e monetizando no GitStore.
+              </p>
+              <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                 <Button size="lg" variant="success" asChild>
-                  <Link href={ROUTES.PUBLISH}>Publicar agora</Link>
+                  <Link href="/login">Criar conta grátis</Link>
                 </Button>
                 <Button size="lg" variant="secondary" asChild>
-                  <Link href={ROUTES.DEVELOPERS}>Buscar desenvolvedores</Link>
+                  <Link href={ROUTES.PROJECTS}>Explorar projetos</Link>
                 </Button>
               </div>
+              <p className="mt-5 text-xs text-[#484f58]">Sem cartão de crédito · Grátis para sempre no plano básico</p>
             </div>
           </div>
         </Container>

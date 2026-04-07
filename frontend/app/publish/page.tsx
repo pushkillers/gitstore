@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { LANGUAGES, CATEGORIES } from "@/constants";
-import { createProject, saveProject } from "@/lib/projects";
+import { publishProject } from "@/lib/projects";
+import { addXP } from "@/lib/xp";
+import { toast } from "@/lib/toast";
 import { CheckCircle, Loader2 } from "lucide-react";
 
 const TYPES = [
@@ -17,6 +19,7 @@ export default function PublishPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     name: "", description: "", language: "", category: "",
@@ -30,9 +33,8 @@ export default function PublishPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 600));
 
-    const project = createProject({
+    const result = await publishProject({
       name: form.name,
       description: form.description,
       language: form.language,
@@ -43,9 +45,15 @@ export default function PublishPage() {
       price: form.price ? parseFloat(form.price) : undefined,
     });
 
-    saveProject(project);
     setSubmitting(false);
-    setDone(true);
+    if (result.ok) {
+      addXP("PROJECT_CREATED");
+      toast.success("Projeto publicado! +100 XP 🚀");
+      setDone(true);
+    } else {
+      // show error inline — reuse the error state
+      setError(result.error);
+    }
   };
 
   const inputCls = "w-full rounded-xl border border-[#30363d] bg-[#0d1117] px-4 py-2.5 text-sm text-[#e6edf3] outline-none placeholder:text-[#6e7681] focus:border-[#58a6ff] focus:ring-2 focus:ring-[#58a6ff]/15 transition-all";
@@ -174,6 +182,12 @@ export default function PublishPage() {
               <>🚀 Publicar projeto</>
             )}
           </button>
+
+          {error && (
+            <p className="rounded-xl border border-[#f85149]/30 bg-[#f8514915] px-4 py-3 text-sm text-[#ff8a84]">
+              {error}
+            </p>
+          )}
         </form>
       </Container>
     </div>

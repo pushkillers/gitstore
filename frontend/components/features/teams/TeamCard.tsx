@@ -1,131 +1,113 @@
 "use client";
 
-import { Badge } from "@/components/ui/Badge";
-
-interface TeamMember {
-  id: number;
-  name: string;
-  avatar: string;
-}
-
+interface TeamMember { id: number; name: string; avatar: string; }
 interface Team {
-  id: number;
-  name: string;
-  description: string;
-  banner: string;
-  logo: string;
-  members: TeamMember[];
-  memberCount: number;
-  projectCount: number;
-  tags: string[];
-  isPublic: boolean;
-  level: number;
+  id: number; name: string; description: string;
+  logo: string; members: TeamMember[]; memberCount: number;
+  projectCount: number; tags: string[]; isPublic: boolean; level: number;
 }
 
-interface TeamCardProps {
-  team: Team;
-}
+const LEVEL_COLORS = [
+  { min: 0,  max: 10, color: "#3fb950", label: "Iniciante" },
+  { min: 10, max: 20, color: "#58a6ff", label: "Intermediário" },
+  { min: 20, max: 30, color: "#d29922", label: "Avançado" },
+  { min: 30, max: Infinity, color: "#a371f7", label: "Elite" },
+];
 
-export function TeamCard({ team }: TeamCardProps) {
+export function TeamCard({ team }: { team: Team }) {
+  const lvl = LEVEL_COLORS.find((l) => team.level >= l.min && team.level < l.max) ?? LEVEL_COLORS[0];
+
   return (
-    <div className="group relative bg-gradient-to-b from-[#161b22] to-[#0d1117] border border-[#30363d] rounded-xl overflow-hidden hover:border-[#1f6feb] transition-all duration-300 hover:shadow-2xl hover:shadow-[#1f6feb]/30 hover:-translate-y-1 h-full flex flex-col">
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#1f6feb]/0 via-[#1f6feb]/0 to-[#1f6feb]/0 group-hover:from-[#1f6feb]/5 group-hover:via-[#1f6feb]/0 group-hover:to-[#1f6feb]/5 transition-all duration-500 pointer-events-none" />
-      
+    <article className="group relative flex flex-col overflow-hidden rounded-xl border border-[#21262d] bg-[#161b22] transition-all duration-200 hover:border-[#30363d] hover:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.5)]">
       {/* Banner */}
-      <div className="relative h-48 bg-gradient-to-br from-[#1f6feb]/20 to-[#8b5cf6]/20 overflow-hidden">
-        {/* Animated gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-shimmer" />
-        
-        {/* Pattern overlay */}
-        <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC40Ij48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')]" />
-        
+      <div className="relative h-28 overflow-hidden bg-gradient-to-br from-[#1f6feb]/15 to-[#8957e5]/10">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(88,166,255,0.08) 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-[radial-gradient(circle_at_50%_0%,rgba(88,166,255,0.1),transparent_70%)]" />
+
         {/* Badges */}
-        <div className="absolute top-3 right-3 flex items-center gap-2">
-          <Badge variant={team.isPublic ? "success" : "default"} className="backdrop-blur-sm font-bold">
-            {team.isPublic ? "PÚBLICA" : "PRIVADA"}
-          </Badge>
-          <Badge variant="primary" className="backdrop-blur-sm font-bold">
-            NÍVEL {team.level}
-          </Badge>
+        <div className="absolute right-3 top-3 flex gap-1.5">
+          <span
+            className="rounded-full border px-2 py-0.5 text-[10px] font-semibold backdrop-blur-sm"
+            style={{ color: lvl.color, borderColor: `${lvl.color}25`, backgroundColor: `${lvl.color}10` }}
+          >
+            Nível {team.level}
+          </span>
+          <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold backdrop-blur-sm ${
+            team.isPublic
+              ? "border-[#3fb950]/25 bg-[#3fb950]/10 text-[#3fb950]"
+              : "border-[#484f58]/25 bg-[#21262d] text-[#7d8590]"
+          }`}>
+            {team.isPublic ? "Pública" : "Privada"}
+          </span>
         </div>
-        
-        {/* Team logo */}
+
+        {/* Logo */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative group/logo">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1f6feb] to-[#8b5cf6] rounded-2xl blur-xl opacity-50 group-hover/logo:opacity-75 transition-opacity" />
-            <div className="relative w-20 h-20 rounded-2xl bg-[#161b22] border-2 border-[#30363d] flex items-center justify-center text-4xl font-bold text-white shadow-2xl ring-2 ring-[#1f6feb]/20 group-hover/logo:ring-[#1f6feb]/40 transition-all">
-              {team.logo}
-            </div>
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/8 bg-[#0d1117]/80 text-3xl backdrop-blur-sm transition-transform duration-200 group-hover:scale-105">
+            {team.logo}
           </div>
         </div>
       </div>
-      
-      {/* Content */}
-      <div className="p-5 flex-1 flex flex-col">
-        {/* Header */}
-        <div className="mb-3">
-          <h3 className="text-lg font-semibold text-[#e6edf3] group-hover:text-[#58a6ff] transition-colors mb-1 line-clamp-1">
-            {team.name}
-          </h3>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="mb-1 text-sm font-semibold text-[#e6edf3] transition-colors group-hover:text-[#58a6ff]">
+          {team.name}
+        </h3>
+
+        <div className="mb-3 flex items-center gap-3 text-[11px] text-[#484f58]">
+          <span>{team.memberCount} membros</span>
+          <span>·</span>
+          <span>{team.projectCount} projetos</span>
         </div>
-        
-        {/* Stats */}
-        <div className="flex items-center gap-4 mb-3 text-sm">
-          <div className="flex items-center gap-1 text-[#7d8590]">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M5.5 3.5A2.5 2.5 0 018 6h5.5a.5.5 0 010 1H8a2.5 2.5 0 01-2.5-2.5.5.5 0 011 0zM3 8a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9A.5.5 0 013 8zm0 2.5a.5.5 0 01.5-.5h6a.5.5 0 010 1h-6a.5.5 0 01-.5-.5z"/>
-            </svg>
-            <span className="text-xs">{team.projectCount} projetos</span>
-          </div>
-          <div className="flex items-center gap-1 text-[#7d8590]">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm2-3a2 2 0 11-4 0 2 2 0 014 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-            </svg>
-            <span className="text-xs">{team.memberCount} membros</span>
-          </div>
-        </div>
-        
-        {/* Description */}
-        <p className="text-[#7d8590] text-sm mb-4 line-clamp-2 flex-1">
-          {team.description}
-        </p>
-        
-        {/* Footer */}
-        <div className="space-y-3 pt-3 border-t border-[#21262d]">
-          {/* Members avatars */}
-          <div className="flex items-center gap-2">
-            <div className="flex -space-x-2">
-              {team.members.slice(0, 5).map((member) => (
-                <div
-                  key={member.id}
-                  className="w-7 h-7 rounded-full bg-gradient-to-br from-[#1f6feb] to-[#8b5cf6] border-2 border-[#161b22] flex items-center justify-center text-xs font-bold text-white"
-                  title={member.name}
-                >
-                  {member.avatar}
-                </div>
-              ))}
-            </div>
-            {team.memberCount > 5 && (
-              <span className="text-xs text-[#7d8590]">
-                +{team.memberCount - 5}
-              </span>
-            )}
-          </div>
-          
-          {/* Tags */}
-          <div className="flex gap-1.5 flex-wrap">
-            {team.tags.slice(0, 2).map((tag) => (
-              <Badge key={tag} variant="default" className="text-xs">
-                {tag}
-              </Badge>
+
+        <p className="mb-4 line-clamp-2 flex-1 text-xs leading-5 text-[#7d8590]">{team.description}</p>
+
+        {/* Members */}
+        <div className="mb-3 flex items-center gap-2">
+          <div className="flex -space-x-1.5">
+            {team.members.slice(0, 5).map((m) => (
+              <div
+                key={m.id}
+                className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-[#161b22] bg-gradient-to-br from-[#388bfd] to-[#8957e5] text-[9px] font-bold text-white"
+                title={m.name}
+              >
+                {m.avatar}
+              </div>
             ))}
-            {team.tags.length > 2 && (
-              <Badge variant="default" className="text-xs">+{team.tags.length - 2}</Badge>
-            )}
           </div>
+          {team.memberCount > 5 && (
+            <span className="text-[10px] text-[#484f58]">+{team.memberCount - 5}</span>
+          )}
+        </div>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1">
+          {team.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="rounded-full border border-[#21262d] px-2 py-0.5 text-[10px] text-[#484f58]">
+              {tag}
+            </span>
+          ))}
+          {team.tags.length > 3 && (
+            <span className="rounded-full border border-[#21262d] px-2 py-0.5 text-[10px] text-[#484f58]">
+              +{team.tags.length - 3}
+            </span>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* CTA */}
+      <div className="border-t border-[#21262d] px-5 py-3">
+        <button className="w-full rounded-lg border border-[#30363d] py-1.5 text-xs font-medium text-[#7d8590] transition-all hover:border-[#388bfd]/40 hover:text-[#58a6ff]">
+          {team.isPublic ? "Solicitar entrada" : "Ver detalhes"}
+        </button>
+      </div>
+    </article>
   );
 }
