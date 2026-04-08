@@ -25,6 +25,26 @@ Ou adicione manualmente:
 6. Clique em "OK" em todas as janelas
 7. Feche e reabra o terminal
 
+## macOS & Linux (Terminal/Zsh/Bash)
+
+1. Abra o arquivo de configuração do seu terminal:
+```bash
+# Para macOS (Zsh)
+nano ~/.zshrc
+
+# Para Linux (Bash)
+nano ~/.bashrc
+```
+2. Adicione a seguinte linha ao final do arquivo:
+```bash
+export PATH=$PATH:/usr/local/go/bin:$(go env GOPATH)/bin
+```
+3. Salve (`Ctrl+O`, `Enter`) e saia (`Ctrl+X`).
+4. Atualize o terminal atual:
+```bash
+source ~/.zshrc  # ou ~/.bashrc
+```
+
 ## Instalação
 
 ```bash
